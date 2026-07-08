@@ -54,10 +54,10 @@ const SECTION_IDS = NAV_ITEMS.map((item) => item.href);
 const TIER_OPTIONS = ['Starter', 'Growth', 'Scale'];
 const BILLING_SAVE_RATE = 0.1;
 const SOCIAL_PROOF = [
-  { label: 'Built for SMEs', value: 'Southern Africa first' },
-  { label: 'Quote output', value: 'PDF ready in seconds' },
-  { label: 'Language', value: 'Natural language in, quote out' },
-  { label: 'Currencies', value: 'ZAR, USD, BWP, NAD, EUR' },
+  { label: 'Speed that wins deals', value: 'Quote in minutes, not hours' },
+  { label: 'No manual grunt work', value: 'One message, instant PDF' },
+  { label: 'Built for how you work', value: 'WhatsApp in, polished quote out' },
+  { label: 'Multi-currency ready', value: 'ZAR, USD, BWP, NAD, EUR' },
 ];
 
 function formatRand(amount: number) {
@@ -812,7 +812,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="mx-auto max-w-7xl px-4 pb-14 sm:px-6 lg:px-8">
+      <section className="mx-auto max-w-7xl px-6 pb-14 sm:px-16 lg:px-24">
         <div className="grid gap-8 sm:gap-6 md:grid-cols-2 lg:grid-cols-4">
           {SOCIAL_PROOF.map((item, index) => (
             <div
