@@ -389,7 +389,7 @@ function NavChrome({
           <button
             type="button"
             onClick={onOpenWaitlist}
-            className={actionButtonClassName}
+            className={`${actionButtonClassName} hidden md:inline-flex`}
             style={{ background: BRAND, color: PAPER }}
           >
             Join waitlist
@@ -446,6 +446,14 @@ function NavChrome({
                   {item.label}
                 </a>
               ))}
+              <button
+                type="button"
+                onClick={onOpenWaitlist}
+                className="mt-1 inline-flex w-full items-center justify-center rounded-full py-3 text-sm font-semibold text-[#f7eef0]"
+                style={{ background: BRAND }}
+              >
+                Join waitlist
+              </button>
             </div>
           </div>
         </div>
