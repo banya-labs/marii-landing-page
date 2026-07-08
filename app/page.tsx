@@ -672,22 +672,20 @@ export default function Home() {
                 AI QUOTE SOFTWARE FOR SOUTHERN AFRICAN SMEs
               </p>
               <h1
-                className="max-w-[12ch] font-serif font-light leading-[0.92] tracking-[-0.04em] text-[#1f1a22] dark:text-[#f0e8eb]"
+                className="max-w-[14ch] font-serif font-light leading-[0.92] tracking-[-0.04em] text-[#1f1a22] dark:text-[#f0e8eb]"
                 style={{ fontSize: 'clamp(3.2rem, 14vw, 7.5rem)' }}
               >
-                Generate
+                Stop wasting
                 <br />
-                professional
+                time on manual
                 <br />
-                <span style={{ color: BRAND }}>PDF quotes instantly.</span>
+                <span style={{ color: BRAND }}>quotes.</span>
               </h1>
-              <p className="mt-4 max-w-[30rem] font-serif text-[1.35rem] leading-tight text-[#1f1a22] dark:text-[#f0e8eb] sm:mt-5 sm:text-[1.65rem]">
-                Marii turns WhatsApp messages, voice notes, and emails into clear PDF quotes that are easy to send,
-                print, and share.
+              <p className="mt-4 max-w-[33rem] font-serif text-[1.35rem] leading-tight text-[#1f1a22] dark:text-[#f0e8eb] sm:mt-5 sm:text-[1.65rem]">
+                Just describe what the quote needs. Our AI understands natural language, searches your catalogue, fills in all the details, and creates a polished PDF quote ready to send.
               </p>
               <p className="mt-5 max-w-[33rem] text-sm leading-relaxed text-[#6f6770] sm:mt-6 sm:text-base">
-                Marii checks the catalogue, asks for missing details when needed, and helps your team send quotes
-                without the back and forth.
+                Use whatever&apos;s easiest—copy a message from WhatsApp, forward an email, send a voice note. Marii&apos;s AI processes natural language input, looks up your products and pricing, and generates a complete, professional quote. Your team gets their time back. Your customers get instant responses.
               </p>
               <div className="mt-7 flex flex-col gap-3 sm:mt-8 sm:flex-row sm:items-center">
                 <button
