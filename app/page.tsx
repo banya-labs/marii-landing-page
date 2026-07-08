@@ -1123,11 +1123,17 @@ export default function Home() {
                   background: isDark ? 'rgba(42,36,41,0.40)' : 'rgba(107,53,80,0.06)',
                   border: isDark ? '1px solid rgba(211,203,207,0.08)' : '1px solid rgba(107,53,80,0.10)'
                 }}>
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="text-center text-[#a8a5ac] dark:text-[#8d8691]">
-                      <span className="text-6xl font-semibold opacity-20" style={{ color: BRAND }}>{index + 1}</span>
-                    </div>
-                  </div>
+                  <img 
+                    src={[
+                      '/manufacturing-fabrication.png',
+                      '/construction-contractors.png',
+                      '/it-services-msps.png',
+                      '/event-catering-services.png',
+                      '/logistics-transport.png'
+                    ][index]}
+                    alt={item.title}
+                    className="w-full h-full object-cover"
+                  />
                 </div>
               </button>
             );
