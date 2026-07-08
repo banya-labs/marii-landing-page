@@ -338,7 +338,7 @@ function NavChrome({
   activeSection: string;
 }) {
   const wrapperClassName = floating
-    ? 'pointer-events-auto mx-auto w-full max-w-7xl rounded-full border border-[rgba(31,26,34,0.08)] bg-[#f7eef0]/92 px-3 py-2 shadow-[0_18px_44px_-26px_rgba(31,26,34,0.28)] backdrop-blur-md dark:border-[rgba(211,203,207,0.10)] dark:bg-[#241f27]/88'
+    ? `pointer-events-auto mx-auto w-full max-w-7xl ${mobileMenuOpen ? 'rounded-3xl' : 'rounded-full'} border border-[rgba(31,26,34,0.08)] bg-[#f7eef0]/92 px-3 py-2 shadow-[0_18px_44px_-26px_rgba(31,26,34,0.28)] backdrop-blur-md dark:border-[rgba(211,203,207,0.10)] dark:bg-[#241f27]/88`
     : 'mx-auto w-full max-w-7xl';
   const rowClassName = floating
     ? 'grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-2 sm:gap-3'
