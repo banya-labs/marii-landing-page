@@ -124,28 +124,28 @@ const FEATURE_GRID = [
 
 const USE_CASES = [
   {
-    title: 'Automotive shops',
-    desc: 'Service parts, labour, and follow-up quotes without losing the thread in WhatsApp.',
+    title: 'Manufacturing & Fabrication',
+    desc: 'Custom metal work, electronics, or plastics? Turn RFQs into polished quotes in minutes. Your catalogue manages complex configurations and bulk pricing automatically.',
   },
   {
-    title: 'Contractors',
-    desc: 'Materials, labour, and site-specific pricing for active jobs and new enquiries.',
+    title: 'Construction & Contractors',
+    desc: 'Site surveys lead to quotes. Marii takes site notes, materials lists, and labour hours—then generates a professional bid while you&apos;re still on the job site.',
   },
   {
-    title: 'Print shops',
-    desc: 'Sizes, finishes, quantities, and turnaround-based pricing in one clean quote flow.',
+    title: 'IT Services & MSPs',
+    desc: 'High-volume technical quotes need speed. Define your service packages once. Marii handles setup fees, per-user costs, and support tiers in seconds.',
   },
   {
-    title: 'Designers',
-    desc: 'Packages, revision rounds, and project-based quotes that stay polished and professional.',
+    title: 'Event & Catering Services',
+    desc: 'Venue rental, catering, and AV setup all have different pricing. Marii bundles your service catalogue into clean proposals fast enough to quote while on calls.',
   },
   {
-    title: 'Freelancers',
-    desc: 'Fast quotes for solo operators who need to move from message to PDF without admin drag.',
+    title: 'Logistics & Transport',
+    desc: 'Freight quotes depend on weight, distance, and urgency. Your catalogue stores zone pricing and rates. Marii delivers quotes before your customer hangs up.',
   },
   {
-    title: 'Consultants',
-    desc: 'Hourly, project, and retainer pricing with proper visibility into what closes and what stalls.',
+    title: 'Automotive & Repair Shops',
+    desc: 'Diagnostics lead to parts and labour quotes. Skip the manual spreadsheet. Marii generates accurate, itemized invoices customers trust and approve instantly.',
   },
 ];
 
