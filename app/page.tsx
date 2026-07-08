@@ -813,14 +813,22 @@ export default function Home() {
       </section>
 
       <section className="mx-auto max-w-7xl px-4 pb-14 sm:px-6 lg:px-8">
-        <div className="grid gap-3 md:grid-cols-4">
-          {SOCIAL_PROOF.map((item) => (
+        <div className="grid gap-8 sm:gap-6 md:grid-cols-2 lg:grid-cols-4">
+          {SOCIAL_PROOF.map((item, index) => (
             <div
               key={item.label}
-              className="rounded-[18px] border border-[rgba(31,26,34,0.07)] bg-white/75 p-4 dark:border-[rgba(211,203,207,0.08)] dark:bg-white/5"
+              className={`flex flex-col justify-start py-6 ${
+                index < SOCIAL_PROOF.length - 1 ? 'md:border-r' : ''
+              } ${
+                index % 2 === 1 && index < SOCIAL_PROOF.length - 1 ? 'md:border-r-0 lg:border-r' : ''
+              } border-[rgba(107,53,80,0.12)] dark:border-[rgba(211,203,207,0.08)]`}
             >
-              <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#6f6770]">{item.label}</p>
-              <p className="mt-2 text-sm font-semibold text-[#1f1a22] dark:text-[#f0e8eb]">{item.value}</p>
+              <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-[#a8a5ac] dark:text-[#8d8691]">
+                {item.label}
+              </p>
+              <p className="mt-3 text-base font-semibold leading-relaxed text-[#1f1a22] dark:text-[#f0e8eb]">
+                {item.value}
+              </p>
             </div>
           ))}
         </div>
