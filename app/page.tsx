@@ -54,10 +54,10 @@ const SECTION_IDS = NAV_ITEMS.map((item) => item.href);
 const TIER_OPTIONS = ['Starter', 'Growth', 'Scale'];
 const BILLING_SAVE_RATE = 0.1;
 const SOCIAL_PROOF = [
-  { label: 'Built for SMEs', value: 'Southern Africa first' },
-  { label: 'Quote output', value: 'PDF ready in seconds' },
-  { label: 'Language', value: 'Natural language in, quote out' },
-  { label: 'Currencies', value: 'ZAR, USD, BWP, NAD, EUR' },
+  { label: 'Speed that wins deals', value: 'Quote in minutes, not hours' },
+  { label: 'No manual grunt work', value: 'One message, instant PDF' },
+  { label: 'Built for how you work', value: 'WhatsApp in, polished quote out' },
+  { label: 'All currencies supported', value: 'Generate quotes in any currency' },
 ];
 
 function formatRand(amount: number) {
@@ -124,28 +124,24 @@ const FEATURE_GRID = [
 
 const USE_CASES = [
   {
-    title: 'Automotive shops',
-    desc: 'Service parts, labour, and follow-up quotes without losing the thread in WhatsApp.',
+    title: 'Manufacturing & Fabrication',
+    desc: 'Custom metal work, electronics, or plastics? Turn RFQs into polished quotes in minutes. Your catalogue manages complex configurations and bulk pricing automatically.',
   },
   {
-    title: 'Contractors',
-    desc: 'Materials, labour, and site-specific pricing for active jobs and new enquiries.',
+    title: 'Construction & Contractors',
+    desc: 'Site surveys lead to quotes. Marii takes site notes, materials lists, and labour hours—then generates a professional bid while you&apos;re still on the job site.',
   },
   {
-    title: 'Print shops',
-    desc: 'Sizes, finishes, quantities, and turnaround-based pricing in one clean quote flow.',
+    title: 'IT Services & MSPs',
+    desc: 'High-volume technical quotes need speed. Define your service packages once. Marii handles setup fees, per-user costs, and support tiers in seconds.',
   },
   {
-    title: 'Designers',
-    desc: 'Packages, revision rounds, and project-based quotes that stay polished and professional.',
+    title: 'Event & Catering Services',
+    desc: 'Venue rental, catering, and AV setup all have different pricing. Marii bundles your service catalogue into clean proposals fast enough to quote while on calls.',
   },
   {
-    title: 'Freelancers',
-    desc: 'Fast quotes for solo operators who need to move from message to PDF without admin drag.',
-  },
-  {
-    title: 'Consultants',
-    desc: 'Hourly, project, and retainer pricing with proper visibility into what closes and what stalls.',
+    title: 'Logistics & Transport',
+    desc: 'Freight quotes depend on weight, distance, and urgency. Your catalogue stores zone pricing and rates. Marii delivers quotes before your customer hangs up.',
   },
 ];
 
@@ -203,24 +199,24 @@ const TESTIMONIALS = [
 const PRICING = [
   {
     name: 'Starter',
-    label: 'The Deal Finder',
+    label: 'Just Started',
     monthlyPrice: 249,
     quotes: '100 quotes per month',
-    fit: 'For freelancers, solo operators, and micro-studios testing the waters or managing a slow-and-steady stream of leads.',
+    fit: 'For freelancers and solo operators getting started. Test the system, build your process, prove the ROI before scaling.',
     analyticsTitle: 'Basic Pipeline Visibility',
     analytics: [
       'Total pipeline value: see the total monetary value of all quotes generated.',
       'Win / loss count: simple counters for accepted vs rejected quotes.',
       'Client leaderboard: top 5 clients by total quoted value.',
     ],
-    why: 'Low friction, clean dashboard, and a faster route away from messy PDF templates.',
+    why: 'Perfect entry point to eliminate manual quoting and prove the time you&apos;ll save.',
   },
   {
     name: 'Growth',
-    label: 'The Pipeline Optimizer',
+    label: 'Growing Fast',
     monthlyPrice: 599,
     quotes: '400 quotes per month',
-    fit: 'For established SMEs and growing teams with a steady flow of daily enquiries.',
+    fit: 'For teams that found product-market fit. Handle daily quote volume without the admin headache. This is where most SMEs thrive.',
     analyticsTitle: 'Conversion and Product Dynamics',
     analytics: [
       'Everything in Starter.',
@@ -228,15 +224,15 @@ const PRICING = [
       'Product and service interest index: see what gets asked about most and least.',
       'Loss analysis: track why quotes fail, such as price or timing.',
     ],
-    why: 'The sweet spot for an SME that wants to tighten sales, see real demand, and improve close rates.',
+    why: 'Get the analytics you need to scale faster and smarter without hiring extra admin.',
     popular: true,
   },
   {
     name: 'Scale',
-    label: 'The Revenue Engine',
+    label: 'Enterprise Ready',
     monthlyPrice: 1199,
     quotes: '1,000 quotes per month',
-    fit: 'For high-volume sales operations, agencies, and small teams running heavier quote-to-close cycles.',
+    fit: 'For high-volume operations that need speed at scale. Unlimited quotes, advanced analytics, priority support. Built for revenue teams that can&apos;t afford downtime.',
     analyticsTitle: 'Advanced Temporal and Predictive Insights',
     analytics: [
       'Everything in Growth.',
@@ -244,7 +240,7 @@ const PRICING = [
       'Quote velocity and age: time spent pending before a client decides.',
       'Team performance metrics: highest-value quotes and best conversion rates.',
     ],
-    why: 'Understanding speed and timing at volume is worth real revenue when the month gets busy.',
+    why: 'Maximize revenue at volume. Every hour saved at scale compounds into real business growth.',
   },
 ];
 
@@ -338,7 +334,7 @@ function NavChrome({
   activeSection: string;
 }) {
   const wrapperClassName = floating
-    ? 'pointer-events-auto mx-auto w-full max-w-7xl rounded-full border border-[rgba(31,26,34,0.08)] bg-[#f7eef0]/92 px-3 py-2 shadow-[0_18px_44px_-26px_rgba(31,26,34,0.28)] backdrop-blur-md dark:border-[rgba(211,203,207,0.10)] dark:bg-[#241f27]/88'
+    ? `pointer-events-auto mx-auto w-full max-w-7xl ${mobileMenuOpen ? 'rounded-3xl' : 'rounded-full'} border border-[rgba(31,26,34,0.08)] bg-[#f7eef0]/92 px-3 py-2 shadow-[0_18px_44px_-26px_rgba(31,26,34,0.28)] backdrop-blur-md dark:border-[rgba(211,203,207,0.10)] dark:bg-[#241f27]/88`
     : 'mx-auto w-full max-w-7xl';
   const rowClassName = floating
     ? 'grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-2 sm:gap-3'
@@ -389,7 +385,7 @@ function NavChrome({
           <button
             type="button"
             onClick={onOpenWaitlist}
-            className={actionButtonClassName}
+            className={`hidden md:inline-flex h-11 items-center gap-2 rounded-full px-4 text-sm font-semibold transition-opacity duration-200 hover:opacity-95`}
             style={{ background: BRAND, color: PAPER }}
           >
             Join waitlist
@@ -449,7 +445,7 @@ function NavChrome({
               <button
                 type="button"
                 onClick={onOpenWaitlist}
-                className="mt-1 inline-flex items-center justify-center rounded-full px-4 py-3 text-sm font-semibold text-[#f7eef0]"
+                className="mt-1 inline-flex w-full items-center justify-center rounded-full py-3 text-sm font-semibold text-[#f7eef0]"
                 style={{ background: BRAND }}
               >
                 Join waitlist
@@ -467,6 +463,7 @@ export default function Home() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [activeSection, setActiveSection] = useState(NAV_ITEMS[0].href);
   const [billingCycle, setBillingCycle] = useState<'monthly' | 'yearly'>('monthly');
+  const [selectedCurrency, setSelectedCurrency] = useState(CURRENCIES[0]);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [testimonialIndex, setTestimonialIndex] = useState(0);
   const [testimonialShellHeight, setTestimonialShellHeight] = useState(420);
@@ -671,22 +668,20 @@ export default function Home() {
                 AI QUOTE SOFTWARE FOR SOUTHERN AFRICAN SMEs
               </p>
               <h1
-                className="max-w-[12ch] font-serif font-light leading-[0.92] tracking-[-0.04em] text-[#1f1a22] dark:text-[#f0e8eb]"
+                className="max-w-[14ch] font-serif font-light leading-[0.92] tracking-[-0.04em] text-[#1f1a22] dark:text-[#f0e8eb]"
                 style={{ fontSize: 'clamp(3.2rem, 14vw, 7.5rem)' }}
               >
-                Generate
+                Stop wasting
                 <br />
-                professional
+                time on manual
                 <br />
-                <span style={{ color: BRAND }}>PDF quotes instantly.</span>
+                <span style={{ color: BRAND }}>quotes.</span>
               </h1>
-              <p className="mt-4 max-w-[30rem] font-serif text-[1.35rem] leading-tight text-[#1f1a22] dark:text-[#f0e8eb] sm:mt-5 sm:text-[1.65rem]">
-                Marii turns WhatsApp messages, voice notes, and emails into clear PDF quotes that are easy to send,
-                print, and share.
+              <p className="mt-4 max-w-[33rem] font-serif text-[1.35rem] leading-tight text-[#1f1a22] dark:text-[#f0e8eb] sm:mt-5 sm:text-[1.65rem]">
+                Describe what you need. Our AI searches your catalogue, fills in details, and creates a professional PDF quote.
               </p>
               <p className="mt-5 max-w-[33rem] text-sm leading-relaxed text-[#6f6770] sm:mt-6 sm:text-base">
-                Marii checks the catalogue, asks for missing details when needed, and helps your team send quotes
-                without the back and forth.
+                Send a WhatsApp message, email, or voice note. Marii&apos;s AI generates a complete quote instantly. Your team saves hours. Your customers get instant responses.
               </p>
               <div className="mt-7 flex flex-col gap-3 sm:mt-8 sm:flex-row sm:items-center">
                 <button
@@ -812,15 +807,23 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="mx-auto max-w-7xl px-4 pb-14 sm:px-6 lg:px-8">
-        <div className="grid gap-3 md:grid-cols-4">
-          {SOCIAL_PROOF.map((item) => (
+      <section className="mx-auto max-w-7xl px-6 pb-14 sm:px-16 lg:px-24">
+        <div className="grid gap-8 sm:gap-6 md:grid-cols-2 lg:grid-cols-4">
+          {SOCIAL_PROOF.map((item, index) => (
             <div
               key={item.label}
-              className="rounded-[18px] border border-[rgba(31,26,34,0.07)] bg-white/75 p-4 dark:border-[rgba(211,203,207,0.08)] dark:bg-white/5"
+              className={`flex flex-col justify-start py-6 ${
+                index < SOCIAL_PROOF.length - 1 ? 'md:border-r' : ''
+              } ${
+                index % 2 === 1 && index < SOCIAL_PROOF.length - 1 ? 'md:border-r-0 lg:border-r' : ''
+              } border-[rgba(107,53,80,0.12)] dark:border-[rgba(211,203,207,0.08)]`}
             >
-              <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#6f6770]">{item.label}</p>
-              <p className="mt-2 text-sm font-semibold text-[#1f1a22] dark:text-[#f0e8eb]">{item.value}</p>
+              <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-[#a8a5ac] dark:text-[#8d8691]">
+                {item.label}
+              </p>
+              <p className="mt-3 text-base font-semibold leading-relaxed text-[#1f1a22] dark:text-[#f0e8eb]">
+                {item.value}
+              </p>
             </div>
           ))}
         </div>
@@ -934,33 +937,68 @@ export default function Home() {
           </p>
         </div>
 
-        <div className="grid gap-4 lg:grid-cols-2">
-          {ASSISTANTS.map((assistant) => {
+        <div className="space-y-12 lg:space-y-16">
+          {ASSISTANTS.map((assistant, index) => {
             const Icon = assistant.icon;
+            const isEven = index % 2 === 0;
 
             return (
               <div
                 key={assistant.title}
-                className="rounded-[22px] p-6"
-                style={{
-                  background: isDark ? 'rgba(42,36,41,0.64)' : 'rgba(255,255,255,0.75)',
-                  border: isDark ? '1px solid rgba(211,203,207,0.08)' : '1px solid rgba(31,26,34,0.07)',
-                  boxShadow: '0 1px 2px rgba(31,26,34,0.04), 0 8px 24px -10px rgba(31,26,34,0.04)',
-                }}
+                className={`flex flex-col gap-8 sm:gap-10 ${isEven ? 'lg:flex-row' : 'lg:flex-row-reverse'} lg:items-start lg:gap-16`}
               >
-                <div className="mb-5 flex h-11 w-11 items-center justify-center rounded-[12px]" style={{ background: 'rgba(107,53,80,0.10)' }}>
-                  <Icon className="h-5 w-5" style={{ color: BRAND }} />
+                {/* Left side - Title, Description, and Icon */}
+                <div className="flex-1 flex flex-col">
+                  <div className="flex items-start gap-4 mb-6">
+                    <div 
+                      className="flex-shrink-0 flex h-16 w-16 items-center justify-center rounded-2xl" 
+                      style={{ background: 'rgba(107,53,80,0.12)' }}
+                    >
+                      <Icon className="h-8 w-8" style={{ color: BRAND }} />
+                    </div>
+                    <div>
+                      <p className="text-[12px] uppercase tracking-[0.14em] font-semibold text-[#a8a5ac] dark:text-[#8d8691]">Assistant {index + 1}</p>
+                      <h3 className="mt-2 text-2xl sm:text-3xl font-semibold text-[#1f1a22] dark:text-[#f0e8eb]">{assistant.title}</h3>
+                    </div>
+                  </div>
+                  <p className="text-base leading-relaxed text-[#6f6770] dark:text-[#b8adb5] max-w-md">{assistant.desc}</p>
                 </div>
-                <h3 className="text-[1.35rem] font-semibold text-[#1f1a22] dark:text-[#f0e8eb]">{assistant.title}</h3>
-                <p className="mt-3 text-sm leading-relaxed text-[#6f6770]">{assistant.desc}</p>
 
-                <div className="mt-5 grid gap-3 sm:grid-cols-2">
-                  {assistant.points.map((point) => (
+                {/* Center - Illustration */}
+                <div className="flex-1 flex items-center justify-center min-h-80 rounded-2xl overflow-hidden" style={{
+                  background: isDark ? 'rgba(42,36,41,0.40)' : 'rgba(107,53,80,0.04)',
+                  border: isDark ? '1px solid rgba(211,203,207,0.08)' : '1px solid rgba(107,53,80,0.10)'
+                }}>
+                  <img 
+                    src={index === 0 ? '/quote-builder-pdf.png' : '/catalogue-manager-data.png'}
+                    alt={assistant.title}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+
+                {/* Right side - Feature Points */}
+                <div className="flex-1 grid gap-3 sm:grid-cols-2">
+                  {assistant.points.map((point, pointIndex) => (
                     <div
                       key={point}
-                      className="rounded-[14px] border border-[rgba(31,26,34,0.07)] bg-white px-4 py-4 text-sm leading-relaxed text-[#1f1a22] dark:border-[rgba(211,203,207,0.08)] dark:bg-white/5 dark:text-[#f0e8eb]"
+                      className="group relative rounded-[18px] p-4 overflow-hidden transition-all hover:shadow-md"
+                      style={{
+                        background: isDark ? 'rgba(42,36,41,0.60)' : 'rgba(255,255,255,0.60)',
+                        border: isDark ? '1px solid rgba(211,203,207,0.08)' : '1px solid rgba(31,26,34,0.07)',
+                      }}
                     >
-                      {point}
+                      {/* Accent dot on top left */}
+                      <div className="absolute top-0 left-0 w-1 h-1 rounded-full mt-3 ml-3" style={{ background: BRAND }}/>
+                      
+                      <div className="flex gap-3">
+                        <div 
+                          className="flex-shrink-0 flex h-6 w-6 items-center justify-center rounded text-xs font-bold" 
+                          style={{ background: 'rgba(107,53,80,0.15)', color: BRAND }}
+                        >
+                          {pointIndex + 1}
+                        </div>
+                        <p className="text-sm leading-relaxed text-[#1f1a22] dark:text-[#f0e8eb]">{point}</p>
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -984,24 +1022,48 @@ export default function Home() {
           </p>
         </div>
 
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {FEATURE_GRID.map((feature) => {
+        <div className="grid gap-4 sm:gap-5 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 lg:auto-rows-fr">
+          {FEATURE_GRID.map((feature, index) => {
             const Icon = feature.icon;
 
             return (
               <div
                 key={feature.title}
-                className="rounded-[18px] p-6"
+                className="group relative rounded-[22px] p-6 overflow-hidden transition-all hover:shadow-lg"
                 style={{
                   background: isDark ? 'rgba(42,36,41,0.60)' : 'rgba(255,255,255,0.75)',
                   border: isDark ? '1px solid rgba(211,203,207,0.08)' : '1px solid rgba(31,26,34,0.07)',
                 }}
               >
-                <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-[10px]" style={{ background: 'rgba(107,53,80,0.10)' }}>
-                  <Icon className="h-5 w-5" style={{ color: BRAND }} />
+                {/* Accent line */}
+                <div 
+                  className="absolute top-0 left-0 h-1 w-0 group-hover:w-full transition-all duration-300" 
+                  style={{ background: BRAND }}
+                />
+                
+                <div className="relative h-full flex flex-col">
+                  <div className="flex-1">
+                    <div className="flex items-start gap-3 mb-4">
+                      <div 
+                        className="flex-shrink-0 flex h-10 w-10 items-center justify-center rounded-lg" 
+                        style={{ background: 'rgba(107,53,80,0.12)' }}
+                      >
+                        <Icon className="h-5 w-5" style={{ color: BRAND }} />
+                      </div>
+                      <div className="flex-1">
+                        <p className="text-[11px] uppercase tracking-[0.12em] font-semibold text-[#a8a5ac] dark:text-[#8d8691]">
+                          Feature {index + 1}
+                        </p>
+                        <p className="mt-1 text-base font-semibold text-[#1f1a22] dark:text-[#f0e8eb]">
+                          {feature.title}
+                        </p>
+                      </div>
+                    </div>
+                    <p className="text-sm leading-relaxed text-[#6f6770] dark:text-[#b8adb5]">
+                      {feature.desc}
+                    </p>
+                  </div>
                 </div>
-                <p className="mb-2 text-[14px] font-semibold text-[#1f1a22] dark:text-[#f0e8eb]">{feature.title}</p>
-                <p className="text-[13px] leading-relaxed text-[#6f6770]">{feature.desc}</p>
               </div>
             );
           })}
@@ -1022,20 +1084,60 @@ export default function Home() {
           </p>
         </div>
 
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          {USE_CASES.map((item) => (
-            <div
-              key={item.title}
-              className="rounded-[18px] p-5"
-              style={{
-                background: isDark ? 'rgba(42,36,41,0.60)' : 'rgba(255,255,255,0.75)',
-                border: isDark ? '1px solid rgba(211,203,207,0.08)' : '1px solid rgba(31,26,34,0.07)',
-              }}
-            >
-              <p className="text-[14px] font-semibold text-[#1f1a22] dark:text-[#f0e8eb]">{item.title}</p>
-              <p className="mt-2 text-[13px] leading-relaxed text-[#6f6770]">{item.desc}</p>
-            </div>
-          ))}
+        <div className="space-y-8 lg:space-y-12">
+          {USE_CASES.map((item, index) => {
+            const isEven = index % 2 === 0;
+
+            return (
+              <button
+                key={item.title}
+                onClick={() => openWaitlist()}
+                className={`flex flex-col gap-6 sm:gap-8 ${isEven ? 'lg:flex-row' : 'lg:flex-row-reverse'} lg:items-center text-left bg-transparent border-0 cursor-pointer w-full group`}
+              >
+                <div className="flex-1 relative">
+                  <div className="flex flex-col space-y-4">
+                    <div className="flex items-start gap-4">
+                      <div 
+                        className="flex-shrink-0 flex h-14 w-14 items-center justify-center rounded-xl group-hover:shadow-lg transition-all" 
+                        style={{ background: 'rgba(107,53,80,0.12)' }}
+                      >
+                        <span className="text-lg font-semibold" style={{ color: BRAND }}>{index + 1}</span>
+                      </div>
+                      <div>
+                        <p className="text-[13px] uppercase tracking-[0.1em] font-semibold text-[#a8a5ac] dark:text-[#8d8691]">Segment {index + 1}</p>
+                        <p className="mt-2 text-lg font-semibold text-[#1f1a22] dark:text-[#f0e8eb]">{item.title}</p>
+                      </div>
+                    </div>
+                    <p className="text-base leading-relaxed text-[#6f6770] dark:text-[#b8adb5]">{item.desc}</p>
+                    <div className="pt-4 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <span className="text-xs font-semibold text-[#6b3550] dark:text-[#d4a5bf] flex items-center gap-2">
+                        Get started
+                        <svg className="w-3 h-3 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                        </svg>
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                <div className="flex-1 relative h-64 lg:h-80 rounded-2xl overflow-hidden group-hover:shadow-lg transition-all" style={{ 
+                  background: isDark ? 'rgba(42,36,41,0.40)' : 'rgba(107,53,80,0.06)',
+                  border: isDark ? '1px solid rgba(211,203,207,0.08)' : '1px solid rgba(107,53,80,0.10)'
+                }}>
+                  <img 
+                    src={[
+                      '/manufacturing-fabrication.png',
+                      '/construction-contractors.png',
+                      '/it-services-msps.png',
+                      '/event-catering-services.png',
+                      '/logistics-transport.png'
+                    ][index]}
+                    alt={item.title}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              </button>
+            );
+          })}
         </div>
       </section>
 
@@ -1155,18 +1257,35 @@ export default function Home() {
         </div>
 
         <div className="mb-8 flex flex-col gap-4 rounded-[22px] border border-[rgba(31,26,34,0.07)] bg-white/72 p-4 shadow-[0_12px_30px_-24px_rgba(31,26,34,0.14)] dark:border-[rgba(211,203,207,0.08)] dark:bg-white/5 sm:flex-row sm:items-center sm:justify-between sm:p-5">
-          <div>
-            <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#6f6770]">Billing</p>
-            <p className="mt-1 text-sm leading-relaxed text-[#6f6770]">
-              Switch to yearly billing and save 10% on the price of every plan.
-            </p>
+          <div className="flex flex-1 flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#6f6770]">Billing</p>
+              <p className="mt-1 text-sm leading-relaxed text-[#6f6770]">
+                Switch to yearly billing and save 10% on the price of every plan.
+              </p>
+            </div>
+            <div className="flex items-center gap-3">
+              <label htmlFor="currency-select" className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#6f6770]">Currency:</label>
+              <select
+                id="currency-select"
+                value={selectedCurrency}
+                onChange={(e) => setSelectedCurrency(e.target.value)}
+                className="rounded-full border border-[rgba(107,53,80,0.14)] bg-white px-3 py-2 text-sm font-semibold text-[#1f1a22] dark:border-[rgba(211,203,207,0.08)] dark:bg-white/5 dark:text-[#f0e8eb]"
+              >
+                {CURRENCIES.map((currency) => (
+                  <option key={currency} value={currency}>
+                    {currency}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
 
-          <div className="inline-flex rounded-full border border-[rgba(107,53,80,0.14)] bg-[#f7eef0] p-1 dark:border-[rgba(211,203,207,0.08)] dark:bg-white/5">
+          <div className="inline-flex w-full rounded-full border border-[rgba(107,53,80,0.14)] bg-[#f7eef0] p-1 dark:border-[rgba(211,203,207,0.08)] dark:bg-white/5 sm:w-auto">
             <button
               type="button"
               onClick={() => setBillingCycle('monthly')}
-              className={`rounded-full px-4 py-2 text-sm font-semibold transition-colors ${
+              className={`flex-1 rounded-full px-4 py-2 text-sm font-semibold transition-colors sm:flex-none ${
                 billingCycle === 'monthly'
                   ? 'bg-[#6b3550] text-[#f7eef0] shadow-[0_10px_20px_-14px_rgba(107,53,80,0.45)]'
                   : 'text-[#6f6770] hover:text-[#1f1a22] dark:text-[#cfc7cb] dark:hover:text-[#f0e8eb]'
@@ -1177,7 +1296,7 @@ export default function Home() {
             <button
               type="button"
               onClick={() => setBillingCycle('yearly')}
-              className={`rounded-full px-4 py-2 text-sm font-semibold transition-colors ${
+              className={`flex-1 rounded-full px-4 py-2 text-sm font-semibold transition-colors sm:flex-none ${
                 billingCycle === 'yearly'
                   ? 'bg-[#6b3550] text-[#f7eef0] shadow-[0_10px_20px_-14px_rgba(107,53,80,0.45)]'
                   : 'text-[#6f6770] hover:text-[#1f1a22] dark:text-[#cfc7cb] dark:hover:text-[#f0e8eb]'
