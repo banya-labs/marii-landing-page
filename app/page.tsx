@@ -57,7 +57,7 @@ const SOCIAL_PROOF = [
   { label: 'Speed that wins deals', value: 'Quote in minutes, not hours' },
   { label: 'No manual grunt work', value: 'One message, instant PDF' },
   { label: 'Built for how you work', value: 'WhatsApp in, polished quote out' },
-  { label: 'Multi-currency ready', value: 'ZAR, USD, BWP, NAD, EUR' },
+  { label: 'All currencies supported', value: 'Generate quotes in any currency' },
 ];
 
 function formatRand(amount: number) {
@@ -682,10 +682,10 @@ export default function Home() {
                 <span style={{ color: BRAND }}>quotes.</span>
               </h1>
               <p className="mt-4 max-w-[33rem] font-serif text-[1.35rem] leading-tight text-[#1f1a22] dark:text-[#f0e8eb] sm:mt-5 sm:text-[1.65rem]">
-                Just describe what the quote needs. Our AI understands natural language, searches your catalogue, fills in all the details, and creates a polished PDF quote ready to send.
+                Describe what you need. Our AI searches your catalogue, fills in details, and creates a professional PDF quote.
               </p>
               <p className="mt-5 max-w-[33rem] text-sm leading-relaxed text-[#6f6770] sm:mt-6 sm:text-base">
-                Use whatever&apos;s easiest—copy a message from WhatsApp, forward an email, send a voice note. Marii&apos;s AI processes natural language input, looks up your products and pricing, and generates a complete, professional quote. Your team gets their time back. Your customers get instant responses.
+                Send a WhatsApp message, email, or voice note. Marii&apos;s AI generates a complete quote instantly. Your team saves hours. Your customers get instant responses.
               </p>
               <div className="mt-7 flex flex-col gap-3 sm:mt-8 sm:flex-row sm:items-center">
                 <button
