@@ -991,24 +991,43 @@ export default function Home() {
           </p>
         </div>
 
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {FEATURE_GRID.map((feature) => {
+        <div className="space-y-8 lg:space-y-12">
+          {FEATURE_GRID.map((feature, index) => {
             const Icon = feature.icon;
+            const isEven = index % 2 === 0;
 
             return (
               <div
                 key={feature.title}
-                className="rounded-[18px] p-6"
-                style={{
-                  background: isDark ? 'rgba(42,36,41,0.60)' : 'rgba(255,255,255,0.75)',
-                  border: isDark ? '1px solid rgba(211,203,207,0.08)' : '1px solid rgba(31,26,34,0.07)',
-                }}
+                className={`flex flex-col gap-6 sm:gap-8 ${isEven ? 'lg:flex-row' : 'lg:flex-row-reverse'} lg:items-center`}
               >
-                <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-[10px]" style={{ background: 'rgba(107,53,80,0.10)' }}>
-                  <Icon className="h-5 w-5" style={{ color: BRAND }} />
+                <div className="flex-1 relative">
+                  <div className="flex flex-col space-y-4">
+                    <div className="flex items-start gap-4">
+                      <div 
+                        className="flex-shrink-0 flex h-14 w-14 items-center justify-center rounded-xl" 
+                        style={{ background: 'rgba(107,53,80,0.12)' }}
+                      >
+                        <Icon className="h-6 w-6" style={{ color: BRAND }} />
+                      </div>
+                      <div>
+                        <p className="text-[13px] uppercase tracking-[0.1em] font-semibold text-[#a8a5ac] dark:text-[#8d8691]">Feature {index + 1}</p>
+                        <p className="mt-2 text-lg font-semibold text-[#1f1a22] dark:text-[#f0e8eb]">{feature.title}</p>
+                      </div>
+                    </div>
+                    <p className="text-base leading-relaxed text-[#6f6770] dark:text-[#b8adb5]">{feature.desc}</p>
+                  </div>
                 </div>
-                <p className="mb-2 text-[14px] font-semibold text-[#1f1a22] dark:text-[#f0e8eb]">{feature.title}</p>
-                <p className="text-[13px] leading-relaxed text-[#6f6770]">{feature.desc}</p>
+                <div className="flex-1 relative h-64 lg:h-80 rounded-2xl overflow-hidden" style={{ 
+                  background: isDark ? 'rgba(42,36,41,0.40)' : 'rgba(107,53,80,0.06)',
+                  border: isDark ? '1px solid rgba(211,203,207,0.08)' : '1px solid rgba(107,53,80,0.10)'
+                }}>
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="text-center text-[#a8a5ac] dark:text-[#8d8691]">
+                      <Icon className="h-20 w-20 mx-auto opacity-20" style={{ color: BRAND }} />
+                    </div>
+                  </div>
+                </div>
               </div>
             );
           })}
@@ -1029,20 +1048,53 @@ export default function Home() {
           </p>
         </div>
 
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          {USE_CASES.map((item) => (
-            <div
-              key={item.title}
-              className="rounded-[18px] p-5"
-              style={{
-                background: isDark ? 'rgba(42,36,41,0.60)' : 'rgba(255,255,255,0.75)',
-                border: isDark ? '1px solid rgba(211,203,207,0.08)' : '1px solid rgba(31,26,34,0.07)',
-              }}
-            >
-              <p className="text-[14px] font-semibold text-[#1f1a22] dark:text-[#f0e8eb]">{item.title}</p>
-              <p className="mt-2 text-[13px] leading-relaxed text-[#6f6770]">{item.desc}</p>
-            </div>
-          ))}
+        <div className="grid gap-4 sm:gap-5 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 lg:auto-rows-max">
+          {USE_CASES.map((item, index) => {
+            // Create varying heights for visual interest (bento style)
+            const heights = ['lg:row-span-1', 'lg:row-span-1', 'lg:row-span-2', 'lg:row-span-1', 'lg:row-span-1', 'lg:row-span-2'];
+            const heightClass = heights[index % heights.length];
+
+            return (
+              <div
+                key={item.title}
+                className={`group relative rounded-[22px] p-6 overflow-hidden transition-all hover:shadow-lg ${heightClass}`}
+                style={{
+                  background: isDark ? 'rgba(42,36,41,0.60)' : 'rgba(255,255,255,0.75)',
+                  border: isDark ? '1px solid rgba(211,203,207,0.08)' : '1px solid rgba(31,26,34,0.07)',
+                }}
+              >
+                {/* Accent line */}
+                <div 
+                  className="absolute top-0 left-0 h-1 w-0 group-hover:w-full transition-all duration-300" 
+                  style={{ background: BRAND }}
+                />
+                
+                <div className="relative h-full flex flex-col">
+                  <div className="flex-1">
+                    <p className="text-[13px] uppercase tracking-[0.12em] font-semibold text-[#a8a5ac] dark:text-[#8d8691] mb-2">
+                      Segment {index + 1}
+                    </p>
+                    <h3 className="text-lg sm:text-base lg:text-lg font-semibold text-[#1f1a22] dark:text-[#f0e8eb]">
+                      {item.title}
+                    </h3>
+                    <p className="mt-3 text-sm leading-relaxed text-[#6f6770] dark:text-[#b8adb5]">
+                      {item.desc}
+                    </p>
+                  </div>
+                  
+                  {/* Hover CTA indicator */}
+                  <div className="mt-6 pt-6 border-t border-[rgba(107,53,80,0.08)] dark:border-[rgba(211,203,207,0.04)] opacity-0 group-hover:opacity-100 transition-opacity">
+                    <span className="text-xs font-semibold text-[#6b3550] dark:text-[#d4a5bf] flex items-center gap-2">
+                      Learn more
+                      <svg className="w-3 h-3 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      </svg>
+                    </span>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
         </div>
       </section>
 
