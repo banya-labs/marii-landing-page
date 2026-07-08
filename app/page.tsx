@@ -467,6 +467,7 @@ export default function Home() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [activeSection, setActiveSection] = useState(NAV_ITEMS[0].href);
   const [billingCycle, setBillingCycle] = useState<'monthly' | 'yearly'>('monthly');
+  const [selectedCurrency, setSelectedCurrency] = useState(CURRENCIES[0]);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [testimonialIndex, setTestimonialIndex] = useState(0);
   const [testimonialShellHeight, setTestimonialShellHeight] = useState(420);
@@ -1163,11 +1164,28 @@ export default function Home() {
         </div>
 
         <div className="mb-8 flex flex-col gap-4 rounded-[22px] border border-[rgba(31,26,34,0.07)] bg-white/72 p-4 shadow-[0_12px_30px_-24px_rgba(31,26,34,0.14)] dark:border-[rgba(211,203,207,0.08)] dark:bg-white/5 sm:flex-row sm:items-center sm:justify-between sm:p-5">
-          <div>
-            <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#6f6770]">Billing</p>
-            <p className="mt-1 text-sm leading-relaxed text-[#6f6770]">
-              Switch to yearly billing and save 10% on the price of every plan.
-            </p>
+          <div className="flex flex-1 flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#6f6770]">Billing</p>
+              <p className="mt-1 text-sm leading-relaxed text-[#6f6770]">
+                Switch to yearly billing and save 10% on the price of every plan.
+              </p>
+            </div>
+            <div className="flex items-center gap-3">
+              <label htmlFor="currency-select" className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#6f6770]">Currency:</label>
+              <select
+                id="currency-select"
+                value={selectedCurrency}
+                onChange={(e) => setSelectedCurrency(e.target.value)}
+                className="rounded-full border border-[rgba(107,53,80,0.14)] bg-white px-3 py-2 text-sm font-semibold text-[#1f1a22] dark:border-[rgba(211,203,207,0.08)] dark:bg-white/5 dark:text-[#f0e8eb]"
+              >
+                {CURRENCIES.map((currency) => (
+                  <option key={currency} value={currency}>
+                    {currency}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
 
           <div className="inline-flex w-full rounded-full border border-[rgba(107,53,80,0.14)] bg-[#f7eef0] p-1 dark:border-[rgba(211,203,207,0.08)] dark:bg-white/5 sm:w-auto">
