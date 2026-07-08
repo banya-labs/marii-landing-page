@@ -964,6 +964,18 @@ export default function Home() {
                   <p className="text-base leading-relaxed text-[#6f6770] dark:text-[#b8adb5] max-w-md">{assistant.desc}</p>
                 </div>
 
+                {/* Center - Illustration */}
+                <div className="flex-1 flex items-center justify-center min-h-80 rounded-2xl overflow-hidden" style={{
+                  background: isDark ? 'rgba(42,36,41,0.40)' : 'rgba(107,53,80,0.04)',
+                  border: isDark ? '1px solid rgba(211,203,207,0.08)' : '1px solid rgba(107,53,80,0.10)'
+                }}>
+                  <img 
+                    src={index === 0 ? '/quote-builder-pdf.png' : '/catalogue-manager-data.png'}
+                    alt={assistant.title}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+
                 {/* Right side - Feature Points */}
                 <div className="flex-1 grid gap-3 sm:grid-cols-2">
                   {assistant.points.map((point, pointIndex) => (
