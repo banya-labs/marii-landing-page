@@ -1044,17 +1044,13 @@ export default function Home() {
           </p>
         </div>
 
-        <div className="grid gap-4 sm:gap-5 grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 lg:auto-rows-max">
+        <div className="grid gap-4 sm:gap-5 grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 lg:auto-rows-fr">
           {USE_CASES.map((item, index) => {
-            // Create varying heights for visual interest (bento style)
-            const heights = ['lg:row-span-1', 'lg:row-span-2', 'lg:row-span-1', 'lg:row-span-1', 'lg:row-span-2'];
-            const heightClass = heights[index % heights.length];
-
             return (
               <button
                 key={item.title}
                 onClick={() => openWaitlist()}
-                className={`group relative rounded-[22px] p-6 overflow-hidden transition-all hover:shadow-lg text-left bg-transparent border-0 cursor-pointer w-full h-full ${heightClass}`}
+                className="group relative rounded-[22px] p-6 overflow-hidden transition-all hover:shadow-lg text-left bg-transparent border-0 cursor-pointer w-full h-full"
                 style={{
                   background: isDark ? 'rgba(42,36,41,0.60)' : 'rgba(255,255,255,0.75)',
                   border: isDark ? '1px solid rgba(211,203,207,0.08)' : '1px solid rgba(31,26,34,0.07)',
