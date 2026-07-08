@@ -1,75 +1,63 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useSyncExternalStore } from 'react';
+
+const THEME_STORAGE_KEY = 'theme';
+
+function readThemePreference() {
+  if (typeof window === 'undefined') {
+    return false;
+  }
+
+  const storedTheme = window.localStorage.getItem(THEME_STORAGE_KEY);
+
+  if (storedTheme) {
+    return storedTheme === 'dark';
+  }
+
+  return window.matchMedia('(prefers-color-scheme: dark)').matches;
+}
+
+function subscribeThemeChanges(onStoreChange: () => void) {
+  if (typeof window === 'undefined') {
+    return () => {};
+  }
+
+  const handleStorage = () => onStoreChange();
+  const handleThemeChange = () => onStoreChange();
+
+  window.addEventListener('storage', handleStorage);
+  window.addEventListener('themechange', handleThemeChange);
+
+  return () => {
+    window.removeEventListener('storage', handleStorage);
+    window.removeEventListener('themechange', handleThemeChange);
+  };
+}
+
+function useThemePreference() {
+  return useSyncExternalStore(subscribeThemeChanges, readThemePreference, () => false);
+}
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [isDark, setIsDark] = useState(false);
-  const [mounted, setMounted] = useState(false);
+  const isDark = useThemePreference();
 
   useEffect(() => {
-    setMounted(true);
-    const isDarkMode = localStorage.getItem('theme') === 'dark' ||
-      (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
-    setIsDark(isDarkMode);
-    if (isDarkMode) {
-      document.documentElement.classList.add('dark');
-    }
-  }, []);
+    document.documentElement.classList.toggle('dark', isDark);
+  }, [isDark]);
 
-  const toggleTheme = () => {
-    const newIsDark = !isDark;
-    setIsDark(newIsDark);
-    localStorage.setItem('theme', newIsDark ? 'dark' : 'light');
-    if (newIsDark) {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
-  };
-
-  if (!mounted) return <>{children}</>;
-
-  return (
-    <>
-      {children}
-      <script
-        dangerouslySetInnerHTML={{
-          __html: `
-            (function() {
-              const isDark = localStorage.getItem('theme') === 'dark' ||
-                (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
-              if (isDark) {
-                document.documentElement.classList.add('dark');
-              }
-            })();
-          `,
-        }}
-      />
-    </>
-  );
+  return <>{children}</>;
 }
 
 export function useTheme() {
-  const [isDark, setIsDark] = useState(false);
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-    const isDarkMode = localStorage.getItem('theme') === 'dark' ||
-      (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
-    setIsDark(isDarkMode);
-  }, []);
+  const isDark = useThemePreference();
 
   const toggleTheme = () => {
-    const newIsDark = !isDark;
-    setIsDark(newIsDark);
-    localStorage.setItem('theme', newIsDark ? 'dark' : 'light');
-    if (newIsDark) {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
+    const nextIsDark = !isDark;
+    window.localStorage.setItem(THEME_STORAGE_KEY, nextIsDark ? 'dark' : 'light');
+    document.documentElement.classList.toggle('dark', nextIsDark);
+    window.dispatchEvent(new Event('themechange'));
   };
 
-  return { isDark, toggleTheme, mounted };
+  return { isDark, toggleTheme };
 }

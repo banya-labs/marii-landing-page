@@ -1,276 +1,667 @@
 'use client';
 
 import Image from 'next/image';
-import { useState, useEffect } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState, type FormEvent } from 'react';
+import {
+  ArrowRight,
+  BarChart3,
+  Check,
+  ChevronDown,
+  FileText,
+  Globe2,
+  Layers3,
+  MessageSquare,
+  Moon,
+  Menu,
+  PackageSearch,
+  Sun,
+  Upload,
+  X,
+  WandSparkles,
+} from 'lucide-react';
+
 import { useTheme } from '@/components/theme-provider';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Moon, Sun, ArrowRight, Check, MessageSquare, FileText, Zap, BarChart3, Shield, Smartphone } from 'lucide-react';
+import { brandAssets } from '@/lib/brand-assets';
 
-const RotatingJob = () => {
-  const jobs = [
-    'mechanics',
-    'designers',
-    'contractors',
-    'plumbers',
-    'electricians',
-    'photographers',
-    'printers',
-    'freelancers',
-    'consultants',
-    'painters',
-    'welders',
-    'landscapers',
-  ];
+const BRAND = '#6b3550';
+const INK = '#1f1a22';
+const PAPER = '#f7eef0';
+const SURFACE_LIGHT = 'rgba(255,255,255,0.92)';
+const SURFACE_DARK = 'rgba(42,36,41,0.85)';
 
-  const [currentJob, setCurrentJob] = useState(0);
+const CURRENCIES = ['ZAR', 'USD', 'BWP', 'NAD', 'EUR'];
+const HERO_AUDIENCE_TITLES = [
+  'Auto shops',
+  'Contractors',
+  'Print shops',
+  'Designers',
+  'Freelancers',
+  'Consultants',
+  'Workshop owners',
+  'Small teams',
+];
+const WAITLIST_WORKER_URL = process.env.NEXT_PUBLIC_WAITLIST_WORKER_URL ?? '';
+const NAV_ITEMS = [
+  { label: 'Preview', href: 'preview' },
+  { label: 'Assistants', href: 'assistants' },
+  { label: 'Templates', href: 'templates' },
+  { label: 'Pricing', href: 'pricing' },
+] as const;
+const TIER_OPTIONS = ['Starter', 'Growth', 'Scale'];
+const SOCIAL_PROOF = [
+  { label: 'Built for SMEs', value: 'Southern Africa first' },
+  { label: 'Quote output', value: 'PDF ready in seconds' },
+  { label: 'Language', value: 'Natural language in, quote out' },
+  { label: 'Currencies', value: 'ZAR, USD, BWP, NAD, EUR' },
+];
+
+const ASSISTANTS = [
+  {
+    icon: WandSparkles,
+    title: 'AI Quote Builder',
+    desc: 'Paste a WhatsApp message, email, or voice-note transcript. Marii checks the catalogue, builds the quote, asks clarifying questions when needed, and generates the final PDF for sharing.',
+    points: [
+      'Reads plain language and extracts products, quantities, and jobs.',
+      'Checks the catalogue first so pricing stays accurate.',
+      'Flags missing items and asks for clarification before it generates.',
+      'One click creates a clean PDF you can send on WhatsApp or email.',
+    ],
+  },
+  {
+    icon: Upload,
+    title: 'Catalogue Manager',
+    desc: 'Use natural language or file upload to add, remove, and edit catalogue items. Marii can extract products from images, PDFs, and spreadsheets, then turn them into structured line items.',
+    points: [
+      'Accepts images, files, and typed instructions.',
+      'Extracts product names, prices, and descriptions automatically.',
+      'Makes catalogue updates fast enough for a busy SME team.',
+      'Keeps your quote engine aligned with the real price list.',
+    ],
+  },
+];
+
+const FEATURE_GRID = [
+  {
+    icon: MessageSquare,
+    title: 'Natural language quoting',
+    desc: 'Turn raw customer requests into structured quotes without forcing staff to fill in forms first.',
+  },
+  {
+    icon: PackageSearch,
+    title: 'Catalogue lookup',
+    desc: 'Match items to the right products and services so every quote uses the right pricing logic.',
+  },
+  {
+    icon: FileText,
+    title: 'PDF generation',
+    desc: 'Create professional PDF quotes instantly and keep the output ready for sharing or printing.',
+  },
+  {
+    icon: Layers3,
+    title: 'Template flexibility',
+    desc: 'Switch between table-based and image-led quote templates without rebuilding the workflow.',
+  },
+  {
+    icon: Globe2,
+    title: 'Multi-currency support',
+    desc: 'Quote in ZAR first, then switch to USD, BWP, NAD, or EUR when the deal needs it.',
+  },
+  {
+    icon: BarChart3,
+    title: 'Pipeline visibility',
+    desc: 'See what is getting quoted, what is winning, and what products are driving demand.',
+  },
+];
+
+const TEMPLATE_CARDS = [
+  {
+    title: 'Standard template',
+    desc: 'A text-first layout with a neat table of products, quantities, unit prices, VAT, and a total at the bottom.',
+  },
+  {
+    title: 'Image-focused template',
+    desc: 'A visual quote that showcases products with images, details, pricing, and a clear total at the end.',
+  },
+];
+
+const USE_CASES = [
+  {
+    title: 'Automotive shops',
+    desc: 'Service parts, labour, and follow-up quotes without losing the thread in WhatsApp.',
+  },
+  {
+    title: 'Contractors',
+    desc: 'Materials, labour, and site-specific pricing for active jobs and new enquiries.',
+  },
+  {
+    title: 'Print shops',
+    desc: 'Sizes, finishes, quantities, and turnaround-based pricing in one clean quote flow.',
+  },
+  {
+    title: 'Designers',
+    desc: 'Packages, revision rounds, and project-based quotes that stay polished and professional.',
+  },
+  {
+    title: 'Freelancers',
+    desc: 'Fast quotes for solo operators who need to move from message to PDF without admin drag.',
+  },
+  {
+    title: 'Consultants',
+    desc: 'Hourly, project, and retainer pricing with proper visibility into what closes and what stalls.',
+  },
+];
+
+const TESTIMONIALS = [
+  {
+    quote:
+      'We stopped rebuilding quotes from scratch. Now the team sends a clean PDF in minutes, not hours.',
+    name: 'Owner',
+    role: 'Durban auto workshop',
+  },
+  {
+    quote:
+      'The catalogue manager keeps our pricing sane. It is faster, cleaner, and far less error-prone for the team.',
+    name: 'Operations lead',
+    role: 'Cape Town print shop',
+  },
+  {
+    quote:
+      'Marii feels built for how SMEs actually work in South Africa. WhatsApp in, PDF out, and no admin chaos.',
+    name: 'Freelance designer',
+    role: 'Gqeberha',
+  },
+  {
+    quote:
+      'We can turn a message into a proper quote while the customer is still on the phone. That changed everything for us.',
+    name: 'Workshop owner',
+    role: 'Pretoria',
+  },
+  {
+    quote:
+      'The team likes how simple it is. The whole flow feels fast, clear, and easy to keep up with during busy days.',
+    name: 'Sales manager',
+    role: 'Johannesburg service business',
+  },
+  {
+    quote:
+      'Marii helps us send better quotes without needing a full admin team. That saves real time every week.',
+    name: 'Founder',
+    role: 'Nelspruit SME',
+  },
+  {
+    quote:
+      'The PDF output looks professional enough to send straight away, which is exactly what we needed.',
+    name: 'Operations lead',
+    role: 'Port Elizabeth contractor',
+  },
+  {
+    quote:
+      'We finally have a quoting tool that matches how our team works. It is simple, practical, and quick.',
+    name: 'Business owner',
+    role: 'Bloemfontein print shop',
+  },
+];
+
+const PRICING = [
+  {
+    name: 'Starter',
+    label: 'The Deal Finder',
+    price: 'R249 / mo',
+    quotes: '100 quotes per month',
+    fit: 'For freelancers, solo operators, and micro-studios testing the waters or managing a slow-and-steady stream of leads.',
+    analyticsTitle: 'Basic Pipeline Visibility',
+    analytics: [
+      'Total pipeline value: see the total monetary value of all quotes generated.',
+      'Win / loss count: simple counters for accepted vs rejected quotes.',
+      'Client leaderboard: top 5 clients by total quoted value.',
+    ],
+    why: 'Low friction, clean dashboard, and a faster route away from messy PDF templates.',
+  },
+  {
+    name: 'Growth',
+    label: 'The Pipeline Optimizer',
+    price: 'R599 / mo',
+    quotes: '400 quotes per month',
+    fit: 'For established SMEs and growing teams with a steady flow of daily enquiries.',
+    analyticsTitle: 'Conversion and Product Dynamics',
+    analytics: [
+      'Everything in Starter.',
+      'Quote-to-deal conversion rate: track how many quotes become closed deals.',
+      'Product and service interest index: see what gets asked about most and least.',
+      'Loss analysis: track why quotes fail, such as price or timing.',
+    ],
+    why: 'The sweet spot for an SME that wants to tighten sales, see real demand, and improve close rates.',
+    popular: true,
+  },
+  {
+    name: 'Scale',
+    label: 'The Revenue Engine',
+    price: 'R1,199 / mo',
+    quotes: '1,000 quotes per month',
+    fit: 'For high-volume sales operations, agencies, and small teams running heavier quote-to-close cycles.',
+    analyticsTitle: 'Advanced Temporal and Predictive Insights',
+    analytics: [
+      'Everything in Growth.',
+      'Temporal demand patterns: busiest days and weeks for quote requests.',
+      'Quote velocity and age: time spent pending before a client decides.',
+      'Team performance metrics: highest-value quotes and best conversion rates.',
+    ],
+    why: 'Understanding speed and timing at volume is worth real revenue when the month gets busy.',
+  },
+];
+
+const FAQS = [
+  {
+    question: 'Why Marii instead of a standard invoicing or accounting app?',
+    answer:
+      'Accounting systems track money you have already made. Marii is built to help you make the money by focusing on quoting, follow-up, conversion, and the product demand patterns that matter to SMEs.',
+  },
+  {
+    question: 'What happens if I go over my monthly quote limit?',
+    answer:
+      'You get a gentle warning at 90 percent. At 100 percent, you can upgrade or buy a top-up pack to keep the workflow moving without cutting off the sale.',
+  },
+  {
+    question: 'Do top-up quotes expire at the end of the month?',
+    answer:
+      'No. Top-up quotes carry over month to month and are only consumed after your main monthly allowance resets and is fully used up.',
+  },
+  {
+    question: 'Can I quote in multiple currencies and use different templates?',
+    answer:
+      'Yes. Marii supports multiple currencies and lets you choose between a standard table template and an image-focused template depending on the deal.',
+  },
+];
+
+function scrollToSection(id: string) {
+  document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function CurrencyTicker() {
+  const [index, setIndex] = useState(0);
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentJob((prev) => (prev + 1) % jobs.length);
-    }, 4000);
-    return () => clearInterval(interval);
+    const interval = window.setInterval(() => {
+      setIndex((current) => (current + 1) % CURRENCIES.length);
+    }, 2200);
+
+    return () => window.clearInterval(interval);
   }, []);
 
   return (
     <span
-      className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full align-middle flip-rotate-word"
-      style={{
-        background: '#6b3550',
-        color: '#f7eef0',
-        verticalAlign: 'middle',
-        minWidth: '100px',
-        justifyContent: 'center',
-        fontSize: 'inherit',
-      }}
+      aria-hidden="true"
+      className="inline-grid min-w-[92px] place-items-center rounded-full bg-[#6b3550] px-4 py-1.5 font-mono text-[11px] font-semibold tracking-[0.12em] text-[#f7eef0]"
     >
-      {jobs[currentJob]}
+      <span className="col-start-1 row-start-1 select-none opacity-0">CURRENCY</span>
+      <span className="col-start-1 row-start-1">{CURRENCIES[index]}</span>
     </span>
   );
-};
+}
+
+function AudienceTicker() {
+  return (
+    <div className="overflow-hidden">
+      <div
+        className="flex w-max flex-nowrap items-center gap-3"
+        style={{ animation: 'news-ticker-scroll 28s linear infinite', willChange: 'transform' }}
+        aria-hidden="true"
+      >
+        {[...HERO_AUDIENCE_TITLES, ...HERO_AUDIENCE_TITLES].map((item, index) => (
+          <span
+            key={`${item}-${index}`}
+            className="shrink-0 whitespace-nowrap rounded-full border border-[rgba(31,26,34,0.08)] bg-white/72 px-4 py-2 font-mono text-[10px] uppercase tracking-[0.14em] text-[#6f6770] dark:border-[rgba(211,203,207,0.08)] dark:bg-white/5"
+          >
+            {item}
+          </span>
+        ))}
+      </div>
+    </div>
+  );
+}
 
 export default function Home() {
-  const { isDark, toggleTheme, mounted } = useTheme();
-  const [email, setEmail] = useState('');
-  const [submitted, setSubmitted] = useState(false);
+  const { isDark, toggleTheme } = useTheme();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [testimonialIndex, setTestimonialIndex] = useState(0);
+  const [testimonialShellHeight, setTestimonialShellHeight] = useState(420);
+  const testimonialCardRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const [formState, setFormState] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    desiredTier: '',
+    emailMarketing: true,
+    whatsappMarketing: false,
+  });
+  const [submitState, setSubmitState] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle');
+  const [submitMessage, setSubmitMessage] = useState('');
+  const shellBackground = isDark ? SURFACE_DARK : SURFACE_LIGHT;
+  const shellBorder = isDark ? '1px solid rgba(211,203,207,0.08)' : '1px solid rgba(31,26,34,0.07)';
+  const softBorder = isDark ? 'rgba(211,203,207,0.08)' : 'rgba(31,26,34,0.07)';
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (email) {
-      setSubmitted(true);
-      setEmail('');
-      setTimeout(() => setSubmitted(false), 3000);
+  function updateField<K extends keyof typeof formState>(field: K, value: (typeof formState)[K]) {
+    setFormState((current) => ({ ...current, [field]: value }));
+  }
+
+  function openWaitlist(desiredTier = '') {
+    setFormState((current) => ({ ...current, desiredTier }));
+    setMobileMenuOpen(false);
+    scrollToSection('footer-cta');
+  }
+
+  function handleNavJump(href: string) {
+    setMobileMenuOpen(false);
+    scrollToSection(href);
+  }
+
+  function setTestimonialAt(index: number) {
+    const normalized = (index + TESTIMONIALS.length) % TESTIMONIALS.length;
+    setTestimonialIndex(normalized);
+  }
+
+  useEffect(() => {
+    const interval = window.setInterval(() => {
+      setTestimonialIndex((current) => (current + 1) % TESTIMONIALS.length);
+    }, 4000);
+
+    return () => window.clearInterval(interval);
+  }, []);
+
+  useLayoutEffect(() => {
+    const updateHeight = () => {
+      const heights = testimonialCardRefs.current
+        .map((node) => node?.offsetHeight ?? 0)
+        .filter((height) => height > 0);
+
+      if (!heights.length) {
+        return;
+      }
+
+      setTestimonialShellHeight(Math.max(...heights) + 40);
+    };
+
+    const frame = window.requestAnimationFrame(updateHeight);
+    window.addEventListener('resize', updateHeight);
+
+    return () => {
+      window.cancelAnimationFrame(frame);
+      window.removeEventListener('resize', updateHeight);
+    };
+  }, [testimonialIndex]);
+
+  async function handleWaitlistSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+
+    if (!WAITLIST_WORKER_URL) {
+      setSubmitState('error');
+      setSubmitMessage('Waitlist endpoint is not configured yet.');
+      return;
     }
-  };
 
-  if (!mounted) return null;
+    setSubmitState('submitting');
+    setSubmitMessage('');
+
+    try {
+      const response = await fetch(WAITLIST_WORKER_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          ...formState,
+          source: 'marii-landing-page',
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to submit waitlist form.');
+      }
+
+      setSubmitState('success');
+      setSubmitMessage('You are on the list. We will be in touch soon.');
+      setFormState({
+        name: '',
+        email: '',
+        phone: '',
+        desiredTier: '',
+        emailMarketing: true,
+        whatsappMarketing: false,
+      });
+    } catch {
+      setSubmitState('error');
+      setSubmitMessage('Something went wrong. Please try again.');
+    }
+  }
 
   return (
-    <main className="min-h-screen bg-[#f0e8eb] dark:bg-[#1f1a22] text-[#1f1a22] dark:text-[#f0e8eb] font-sans transition-colors duration-300">
-
-      {/* ─────────────────────────────────────────────
-          SECTION 1 — BIG HERO CARD
-          Outer page is the quartz background.
-          Card is white/glass sitting on top of it.
-      ───────────────────────────────────────────── */}
-      <section className="px-4 sm:px-6 lg:px-8 pt-6 pb-8">
+    <main className="min-h-screen bg-[#f0e8eb] text-[#1f1a22] transition-colors duration-300 dark:bg-[#1f1a22] dark:text-[#f0e8eb]">
+      <section className="px-4 pb-8 pt-6 sm:px-6 lg:px-8">
         <div
-          className="relative w-full max-w-7xl mx-auto overflow-hidden rounded-[28px] dark:rounded-[28px]"
+          className="relative mx-auto min-h-[82vh] w-full max-w-7xl overflow-hidden rounded-[28px]"
           style={{
-            background: isDark ? 'rgba(42,36,41,0.85)' : 'rgba(255,255,255,0.92)',
-            border: isDark ? '1px solid rgba(211,203,207,0.08)' : '1px solid rgba(31,26,34,0.07)',
+            background: shellBackground,
+            border: shellBorder,
             boxShadow: '0 2px 8px rgba(31,26,34,0.06), 0 32px 80px -24px rgba(31,26,34,0.12)',
-            minHeight: '82vh',
           }}
         >
-          {/* ── NAV INSIDE THE HERO CARD ── */}
-          <nav className="flex items-center justify-between px-6 sm:px-10 pt-6 pb-2">
-            {/* Logo - hidden on desktop, shown on mobile */}
-            <div className="flex md:hidden items-center">
-              <Image
-                src={isDark ? '/marii-logo-white.svg' : '/marii-logo-black.svg'}
-                alt="Marii"
-                width={100}
-                height={34}
-                className="h-7 w-auto"
-                priority
-              />
-            </div>
+          <div className="sticky top-4 z-50 px-4 pt-4 sm:px-6 md:px-10">
+            <div className="mx-auto rounded-full border border-[rgba(31,26,34,0.08)] bg-[#f7eef0]/92 px-3 py-2 shadow-[0_18px_44px_-26px_rgba(31,26,34,0.28)] backdrop-blur-md dark:border-[rgba(211,203,207,0.10)] dark:bg-[#241f27]/88">
+              <div className="flex items-center gap-2 sm:gap-3">
+                <Image
+                  src={isDark ? brandAssets.logoDark : brandAssets.logoLight}
+                  alt="Marii"
+                  width={126}
+                  height={41}
+                  className="h-[34px] w-auto sm:h-[39px]"
+                  priority
+                />
 
-            {/* Center pill nav with logo */}
-            <div className="hidden md:flex items-center gap-2 px-3 py-2 rounded-full bg-[#f0e8eb]/70 dark:bg-[#1f1a22]/60 border border-[rgba(31,26,34,0.08)] dark:border-[rgba(211,203,207,0.10)] backdrop-blur-sm">
-              {/* Logo inside pill - 50% larger */}
-              <Image
-                src={isDark ? '/marii-logo-white.svg' : '/marii-logo-black.svg'}
-                alt="Marii"
-                width={100}
-                height={34}
-                className="h-10 w-auto"
-                priority
-              />
-              <div className="w-px h-6 bg-[rgba(31,26,34,0.10)] dark:bg-[rgba(211,203,207,0.15)]"></div>
-              {[
-                { label: 'Features', href: '#features' },
-                { label: 'Workflow', href: '#workflow' },
-                { label: 'Industries', href: '#industries' },
-              ].map((item) => (
-                <a
-                  key={item.href}
-                  href={item.href}
-                  onClick={(e) => { e.preventDefault(); document.querySelector(item.href)?.scrollIntoView({ behavior: 'smooth' }); }}
-                  className="px-4 py-1.5 text-sm font-medium text-[#6f6770] hover:text-[#1f1a22] dark:hover:text-[#f0e8eb] transition-colors duration-200 rounded-full hover:bg-white/60 dark:hover:bg-white/10"
-                >
-                  {item.label}
-                </a>
-              ))}
-            </div>
+                <div className="hidden min-w-0 flex-1 md:flex">
+                  <div className="flex min-w-0 flex-1 items-center justify-center gap-1 rounded-full bg-white/55 px-2 py-1.5 dark:bg-white/5">
+                    {NAV_ITEMS.map((item) => (
+                      <a
+                        key={item.href}
+                        href={`#${item.href}`}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          handleNavJump(item.href);
+                        }}
+                        className="whitespace-nowrap rounded-full px-4 py-1.5 text-sm font-medium text-[#6f6770] transition-colors duration-200 hover:bg-white/80 hover:text-[#1f1a22] dark:hover:bg-white/10 dark:hover:text-[#f0e8eb]"
+                      >
+                        {item.label}
+                      </a>
+                    ))}
+                  </div>
+                </div>
 
-            {/* Right actions */}
-            <div className="flex md:hidden items-center">
-              <a
-                href="#waitlist"
-                onClick={(e) => { e.preventDefault(); document.querySelector('#waitlist')?.scrollIntoView({ behavior: 'smooth' }); }}
-                className="hidden sm:inline-flex items-center gap-1.5 text-sm font-medium text-[#6f6770] hover:text-[#1f1a22] dark:hover:text-[#f0e8eb] transition-colors duration-200"
+                <div className="ml-auto flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => openWaitlist()}
+                    className="inline-flex h-11 items-center gap-2 rounded-full px-4 text-sm font-semibold transition-opacity duration-200 hover:opacity-95 sm:h-12 sm:px-6"
+                    style={{ background: BRAND, color: PAPER }}
+                  >
+                    Join waitlist
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setMobileMenuOpen((current) => !current)}
+                    className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-[rgba(31,26,34,0.08)] bg-white/70 text-[#1f1a22] transition-colors duration-200 hover:bg-white dark:border-[rgba(211,203,207,0.10)] dark:bg-white/5 dark:text-[#f0e8eb] md:hidden"
+                    aria-label="Toggle menu"
+                    aria-expanded={mobileMenuOpen}
+                  >
+                    {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+                  </button>
+                </div>
+              </div>
+
+              <div
+                className={`md:hidden ${
+                  mobileMenuOpen ? 'mt-3 grid grid-rows-[1fr]' : 'grid grid-rows-[0fr]'
+                } transition-[grid-template-rows] duration-300 ease-out`}
               >
-                Early Access
-              </a>
+                <div className="overflow-hidden">
+                  <div className="rounded-[22px] border border-[rgba(31,26,34,0.07)] bg-white/75 p-3 dark:border-[rgba(211,203,207,0.08)] dark:bg-white/5">
+                    <div className="grid gap-2">
+                      {NAV_ITEMS.map((item) => (
+                        <a
+                          key={item.href}
+                          href={`#${item.href}`}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            handleNavJump(item.href);
+                          }}
+                          className="rounded-full px-4 py-3 text-sm font-medium text-[#1f1a22] transition-colors hover:bg-[#f7eef0] dark:text-[#f0e8eb] dark:hover:bg-white/10"
+                        >
+                          {item.label}
+                        </a>
+                      ))}
+                      <button
+                        type="button"
+                        onClick={() => openWaitlist()}
+                        className="mt-1 inline-flex items-center justify-center rounded-full px-4 py-3 text-sm font-semibold text-[#f7eef0]"
+                        style={{ background: BRAND }}
+                      >
+                        Join waitlist
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="px-4 pt-4 sm:px-6 md:px-10">
+            <div className="flex justify-end">
               <button
-                onClick={(e) => { e.preventDefault(); document.querySelector('#waitlist')?.scrollIntoView({ behavior: 'smooth' }); }}
-                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-[12px] text-sm font-semibold transition-all duration-200 hover:opacity-90"
-                style={{ background: '#6b3550', color: '#f7eef0' }}
-              >
-                Join Waitlist
-              </button>
-              <button
+                type="button"
                 onClick={toggleTheme}
-                className="p-2 rounded-full hover:bg-[#f0e8eb] dark:hover:bg-white/10 transition-colors duration-200"
+                className="rounded-full p-2 transition-colors duration-200 hover:bg-[#f0e8eb] dark:hover:bg-white/10"
                 aria-label="Toggle theme"
               >
-                {isDark
-                  ? <Sun className="w-4 h-4 text-[#6f6770]" />
-                  : <Moon className="w-4 h-4 text-[#6f6770]" />
-                }
+                {isDark ? <Sun className="h-4 w-4 text-[#6f6770]" /> : <Moon className="h-4 w-4 text-[#6f6770]" />}
               </button>
             </div>
-          </nav>
+          </div>
 
-          {/* ── HERO BODY: headline left, phone mockup right ── */}
-          <div className="relative flex flex-col md:flex-row items-end justify-between px-6 sm:px-10 pb-10 pt-8 md:pt-0" style={{ minHeight: '68vh' }}>
-
-            {/* Left: caption + massive headline */}
-            <div className="relative z-10 flex flex-col justify-end pb-2 max-w-xl">
-              <p className="font-mono text-[11px] tracking-[0.10em] uppercase text-[#6f6770] mb-5">
-                AI-Powered Quote Generation
+          <div className="grid gap-8 px-4 pb-8 pt-8 sm:px-6 md:px-10 lg:grid-cols-[minmax(0,1.04fr)_minmax(0,0.96fr)] lg:items-center lg:gap-6 lg:pb-12 lg:pt-10">
+            <div className="relative z-10 flex max-w-[40rem] flex-col justify-end pb-2 lg:max-w-[36rem]">
+              <p className="mb-4 font-mono text-[10px] uppercase tracking-[0.16em] text-[#6f6770] sm:mb-5 sm:text-[11px]">
+                BUILT FOR SOUTHERN AFRICAN SMEs
               </p>
               <h1
-                className="font-serif font-light leading-[0.95] tracking-[-0.03em] text-[#1f1a22] dark:text-[#f0e8eb]"
-                style={{ fontSize: 'clamp(4rem, 9vw, 7.5rem)' }}
+                className="max-w-[12ch] font-serif font-light leading-[0.92] tracking-[-0.04em] text-[#1f1a22] dark:text-[#f0e8eb]"
+                style={{ fontSize: 'clamp(3.2rem, 14vw, 7.5rem)' }}
               >
                 Quote
                 <br />
-                faster,<br />
-                <span style={{ color: '#6b3550' }}>always.</span>
+                faster,
+                <br />
+                <span style={{ color: BRAND }}>always.</span>
               </h1>
-              <p className="mt-6 text-base leading-relaxed text-[#6f6770] max-w-sm">
-                Tell Marii what your customer needs. Get a professional, print-ready quote in seconds — no spreadsheets, no guesswork.
+              <p className="mt-4 max-w-[30rem] font-serif text-[1.35rem] leading-tight text-[#1f1a22] dark:text-[#f0e8eb] sm:mt-5 sm:text-[1.65rem]">
+                Marii turns WhatsApp messages, voice notes, and emails into clean PDF quotes in seconds.
               </p>
-              <div className="mt-8 flex items-center gap-3">
+              <p className="mt-5 max-w-[33rem] text-sm leading-relaxed text-[#6f6770] sm:mt-6 sm:text-base">
+                Marii checks the price list, asks for missing details when needed, and helps your team send a quote
+                without the back and forth.
+              </p>
+              <div className="mt-7 flex flex-col gap-3 sm:mt-8 sm:flex-row sm:items-center">
                 <button
-                  onClick={() => document.querySelector('#waitlist')?.scrollIntoView({ behavior: 'smooth' })}
-                  className="inline-flex items-center gap-2 px-6 py-3 rounded-[12px] text-sm font-semibold transition-all duration-200 hover:opacity-90"
-                  style={{ background: '#6b3550', color: '#f7eef0' }}
+                  type="button"
+                  onClick={() => openWaitlist()}
+                  className="inline-flex w-full items-center justify-center gap-2 rounded-[12px] px-6 py-3 text-sm font-semibold transition-opacity duration-200 hover:opacity-90 sm:w-auto"
+                  style={{ background: BRAND, color: PAPER }}
                 >
-                  Get Early Access
-                  <ArrowRight className="w-4 h-4" />
+                  Join wait list
+                  <ArrowRight className="h-4 w-4" />
                 </button>
                 <button
-                  onClick={() => document.querySelector('#features')?.scrollIntoView({ behavior: 'smooth' })}
-                  className="inline-flex items-center gap-2 px-6 py-3 rounded-[12px] text-sm font-medium transition-colors duration-200"
-                  style={{ background: 'rgba(255,255,255,0.65)', border: '1px solid rgba(31,26,34,0.10)', color: '#1f1a22' }}
+                  type="button"
+                  onClick={() => scrollToSection('assistants')}
+                  className="inline-flex w-full items-center justify-center gap-2 rounded-[12px] px-6 py-3 text-sm font-medium transition-colors duration-200 sm:w-auto"
+                  style={{
+                    background: 'rgba(255,255,255,0.65)',
+                    border: '1px solid rgba(31,26,34,0.10)',
+                    color: INK,
+                  }}
                 >
-                  See Features
+                  See the assistants
                 </button>
               </div>
             </div>
 
-            {/* Right: phone mockup */}
-            <div className="absolute right-0 bottom-0 top-0 hidden md:flex items-end justify-end pointer-events-none w-[60%] md:w-[62%] lg:w-[65%] -ml-[10%]">
-              {/* Phone frame */}
-              <div
-                className="relative mr-6 mb-6 md:mr-8 lg:mr-10"
-                style={{ width: 280, height: 560 }}
-              >
-                {/* Phone shell */}
+            <div className="pointer-events-none relative mx-auto w-[220px] self-center sm:w-[250px] lg:mx-auto lg:w-[300px] xl:w-[320px]">
+              <div className="relative aspect-[280/560] w-full">
                 <div
-                  className="absolute inset-0 rounded-[40px] overflow-hidden"
+                  className="absolute inset-0 overflow-hidden rounded-[40px]"
                   style={{
-                    background: isDark ? '#2a2429' : '#1f1a22',
+                    background: isDark ? '#2a2429' : INK,
                     boxShadow: '0 32px 80px -16px rgba(31,26,34,0.40), 0 4px 16px rgba(31,26,34,0.20)',
                   }}
                 >
-                  {/* Screen content — Marii app splash */}
-                  <div className="absolute inset-[3px] rounded-[38px] overflow-hidden flex flex-col items-center justify-center"
-                    style={{ background: isDark ? '#1f1a22' : '#f7eef0' }}
+                  <div
+                    className="absolute inset-[3px] flex flex-col items-center justify-center overflow-hidden rounded-[38px]"
+                    style={{ background: isDark ? INK : '#f7eef0' }}
                   >
-                    {/* Status bar */}
-                    <div className="absolute top-0 left-0 right-0 h-10 flex items-center justify-between px-6 pt-2">
+                    <div className="absolute left-0 right-0 top-0 flex h-10 items-center justify-between px-6 pt-2">
                       <span className="font-mono text-[10px] text-[#6f6770]">9:41</span>
-                      <div className="w-20 h-5 rounded-full bg-[#1f1a22] dark:bg-[#2a2429] mx-auto absolute left-1/2 -translate-x-1/2 top-1" />
-                      <div className="flex gap-1 items-center">
-                        <div className="w-3 h-2 rounded-sm bg-[#6f6770]/40" />
+                      <div className="absolute left-1/2 top-1 mx-auto h-5 w-20 -translate-x-1/2 rounded-full bg-[#1f1a22] dark:bg-[#2a2429]" />
+                      <div className="flex items-center gap-1">
+                        <div className="h-2 w-3 rounded-sm bg-[#6f6770]/40" />
                       </div>
                     </div>
 
-                    {/* Center: Marii logo */}
                     <div className="flex flex-col items-center justify-center gap-4">
                       <Image
-                        src={isDark ? '/marii-logo-white.svg' : '/marii-logo-black.svg'}
+                        src={isDark ? brandAssets.logoDark : brandAssets.logoLight}
                         alt="Marii app"
                         width={90}
                         height={30}
-                        className="w-24 h-auto opacity-90"
+                        className="h-auto w-24 opacity-90"
                       />
-                      <div
-                        className="w-12 h-12 rounded-[14px] flex items-center justify-center"
-                        style={{ background: '#6b3550' }}
-                      >
-                        <Image
-                          src="/marii-icon-white.svg"
-                          alt=""
-                          width={28}
-                          height={28}
-                          className="w-7 h-7"
-                        />
+                      <div className="flex h-12 w-12 items-center justify-center rounded-[14px]" style={{ background: BRAND }}>
+                        <Image src={brandAssets.iconDark} alt="" width={28} height={28} className="h-7 w-7" />
                       </div>
-                      <p className="font-mono text-[10px] tracking-widest uppercase text-[#6f6770] mt-1">
-                        how much?
+                      <p className="mt-1 font-mono text-[10px] uppercase tracking-widest text-[#6f6770]">
+                        AI quote builder
                       </p>
                     </div>
 
-                    {/* Bottom bar */}
                     <div className="absolute bottom-6 left-4 right-4 space-y-2">
-                      {/* Fake chat bubble */}
-                      <div className="rounded-[10px] px-3 py-2 text-[10px] text-[#1f1a22] dark:text-[#f0e8eb]"
-                        style={{ background: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(31,26,34,0.06)' }}>
-                        &ldquo;2 brake pads + 1 hour labour&rdquo;
+                      <div
+                        className="rounded-[10px] px-3 py-2 text-[10px] text-[#1f1a22] dark:text-[#f0e8eb]"
+                        style={{ background: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(31,26,34,0.06)' }}
+                      >
+                        Need a quote for brake pads, oil, labour, and a service check?
                       </div>
-                      <div className="rounded-[10px] px-3 py-2 text-[10px] text-[#f7eef0] ml-6"
-                        style={{ background: '#6b3550' }}>
+                      <div className="rounded-[10px] px-3 py-2 text-[10px] text-[#f7eef0]" style={{ background: BRAND }}>
+                        Marii: Do you want OEM or aftermarket parts?
+                      </div>
+                      <div className="rounded-[10px] px-3 py-2 text-[10px] text-[#f7eef0]" style={{ background: 'rgba(107,53,80,0.82)' }}>
                         Quote ready: R 1,240.00
                       </div>
                     </div>
                   </div>
 
-                  {/* Side button */}
-                  <div className="absolute right-0 top-24 w-1 h-10 rounded-l-sm" style={{ background: isDark ? '#3d3841' : '#3a3540' }} />
-                  {/* Vol buttons */}
-                  <div className="absolute left-0 top-20 w-1 h-8 rounded-r-sm" style={{ background: isDark ? '#3d3841' : '#3a3540' }} />
-                  <div className="absolute left-0 top-32 w-1 h-8 rounded-r-sm" style={{ background: isDark ? '#3d3841' : '#3a3540' }} />
+                  <div
+                    className="absolute right-0 top-24 h-10 w-1 rounded-l-sm"
+                    style={{ background: isDark ? '#3d3841' : '#3a3540' }}
+                  />
+                  <div
+                    className="absolute left-0 top-20 h-8 w-1 rounded-r-sm"
+                    style={{ background: isDark ? '#3d3841' : '#3a3540' }}
+                  />
+                  <div
+                    className="absolute left-0 top-32 h-8 w-1 rounded-r-sm"
+                    style={{ background: isDark ? '#3d3841' : '#3a3540' }}
+                  />
                 </div>
 
-                {/* Floating stat card */}
                 <div
-                  className="absolute -left-14 bottom-24 px-4 py-3 rounded-[14px] shadow-lg"
+                  className="absolute -left-8 bottom-20 hidden rounded-[14px] px-4 py-3 shadow-lg sm:block lg:-left-10 lg:bottom-24"
                   style={{
                     background: isDark ? 'rgba(42,36,41,0.9)' : 'rgba(255,255,255,0.9)',
                     border: '1px solid rgba(31,26,34,0.08)',
@@ -278,444 +669,731 @@ export default function Home() {
                   }}
                 >
                   <p className="font-mono text-[10px] uppercase tracking-widest text-[#6f6770]">Avg time saved</p>
-                  <p className="font-serif text-2xl font-light text-[#1f1a22] dark:text-[#f0e8eb] mt-0.5">12 min</p>
+                  <p className="mt-0.5 font-serif text-2xl font-light text-[#1f1a22] dark:text-[#f0e8eb]">12 min</p>
                   <p className="text-[10px] text-[#6f6770]">per quote</p>
                 </div>
 
-                {/* Floating type tag */}
                 <div
-                  className="absolute -right-10 top-20 px-3 py-1.5 rounded-full text-[11px] font-semibold shadow-lg"
-                  style={{ background: '#6b3550', color: '#f7eef0' }}
+                  className="absolute -right-1 top-16 rounded-full px-3 py-1.5 text-[11px] font-semibold shadow-lg sm:-right-6 sm:top-20"
+                  style={{ background: BRAND, color: PAPER }}
                 >
-                  PDF Ready
+                  conversion up 18%
                 </div>
               </div>
             </div>
-
           </div>
 
-          {/* ── Bottom ticker row ── */}
-          <div className="border-t px-6 sm:px-10 py-3.5 flex items-center justify-between"
-            style={{ borderColor: 'rgba(31,26,34,0.07)' }}>
-            <p className="font-mono text-[11px] tracking-[0.08em] uppercase text-[#6f6770]">
-              Built for Southern African service businesses
-            </p>
-            <div className="hidden sm:flex items-center gap-4">
-              {['Auto shops', 'Designers', 'Contractors', 'Freelancers'].map((t) => (
-                <span key={t} className="font-mono text-[11px] tracking-widest uppercase text-[#6f6770]/60">{t}</span>
-              ))}
+          <div className="border-t px-6 py-4 sm:px-10" style={{ borderColor: softBorder }}>
+            <p className="font-mono text-[11px] uppercase tracking-[0.14em] text-[#6f6770]">Built for</p>
+            <div className="mt-3">
+              <AudienceTicker />
             </div>
           </div>
         </div>
       </section>
 
-      {/* ─────────────────────────────────────────────
-          SECTION 2 — PULL QUOTE / EDITORIAL HEADING
-          Big Fraunces text with inline business pills
-      ───────────────────────────────────────────── */}
-      <section className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-28 text-center">
-        <h2
-          className="font-serif font-light leading-[1.15] tracking-[-0.025em] text-[#1f1a22] dark:text-[#f0e8eb] flex flex-col items-center"
-          style={{ fontSize: 'clamp(2.25rem, 5vw, 3.5rem)' }}
-        >
-          <div>The smart way for</div>
-          <div style={{ margin: '0.5em 0' }}>
-            <RotatingJob />
-          </div>
-          <div>to send professional PDF quotations.</div>
-        </h2>
-        <p className="mt-6 text-base leading-relaxed text-[#6f6770] max-w-2xl mx-auto">
-          Stop losing time on manual calculations and copy-paste quotes. Marii brings AI precision to every estimate — so you close more jobs and spend less time on admin.
-        </p>
-      </section>
-
-      {/* ─────────────────────────────────────────────
-          SECTION 3 — FEATURE SHOWCASE
-          Left: dark app mockup card
-          Right: numbered features + plum stat card
-      ────────────────────────────────���──────────── */}
-      <section id="features" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
-        <div className="grid md:grid-cols-2 gap-6 items-start">
-
-          {/* Left — dark app mockup card */}
-          <div
-            className="relative rounded-[22px] overflow-hidden"
-            style={{
-              background: isDark ? '#2a2429' : '#1f1a22',
-              minHeight: 480,
-              boxShadow: '0 32px 80px -24px rgba(31,26,34,0.40)',
-            }}
-          >
-            {/* Fake app UI inside the card */}
-            <div className="p-6">
-              {/* App chrome bar */}
-              <div className="flex items-center gap-2 mb-4">
-                <div className="w-3 h-3 rounded-full bg-white/10" />
-                <div className="w-3 h-3 rounded-full bg-white/10" />
-                <div className="w-3 h-3 rounded-full bg-white/10" />
-                <div className="flex-1 mx-3 h-6 rounded-md bg-white/5 flex items-center px-3">
-                  <span className="font-mono text-[10px] text-white/30">marii.app / quotes</span>
-                </div>
-              </div>
-
-              {/* Fake quote conversation */}
-              <div className="space-y-3">
-                <p className="font-mono text-[11px] tracking-widest uppercase text-white/30 mb-4">New Quote Request</p>
-
-                <div className="rounded-[12px] p-3 text-sm text-white/70" style={{ background: 'rgba(255,255,255,0.06)' }}>
-                  &ldquo;I need a quote for a full service — oil change, spark plugs, and brake pad replacement front and rear.&rdquo;
-                </div>
-
-                <div className="rounded-[12px] p-3 space-y-2" style={{ background: 'rgba(107,53,80,0.25)', border: '1px solid rgba(107,53,80,0.40)' }}>
-                  <p className="font-mono text-[10px] uppercase tracking-widest" style={{ color: '#c97ea8' }}>Marii parsed 4 items</p>
-                  {['Engine Oil + Filter', 'Spark Plug Set (4)', 'Front Brake Pads', 'Rear Brake Pads'].map((item, i) => (
-                    <div key={i} className="flex items-center justify-between">
-                      <span className="text-[13px] text-white/80">{item}</span>
-                      <span className="font-mono text-[12px] text-white/50">
-                        {['R 320', 'R 480', 'R 560', 'R 560'][i]}
-                      </span>
-                    </div>
-                  ))}
-                  <div className="border-t border-white/10 pt-2 flex justify-between">
-                    <span className="text-sm font-semibold text-white/90">Total</span>
-                    <span className="font-mono text-sm font-semibold" style={{ color: '#c97ea8' }}>R 1,920.00</span>
-                  </div>
-                </div>
-
-                {/* PDF preview bar */}
-                <div className="flex items-center gap-3 p-3 rounded-[10px]" style={{ background: 'rgba(255,255,255,0.04)' }}>
-                  <div className="w-8 h-10 rounded-[6px] flex items-center justify-center" style={{ background: '#6b3550' }}>
-                    <FileText className="w-4 h-4 text-white" />
-                  </div>
-                  <div>
-                    <p className="text-[12px] text-white/80 font-medium">quote_2026-07-07.pdf</p>
-                    <p className="font-mono text-[10px] text-white/30">Generated · 2 pages · Branded</p>
-                  </div>
-                  <div className="ml-auto">
-                    <div className="w-7 h-7 rounded-full flex items-center justify-center" style={{ background: 'rgba(255,255,255,0.08)' }}>
-                      <ArrowRight className="w-3 h-3 text-white/50" />
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Bottom CTA */}
-            <div className="absolute bottom-0 left-0 right-0 p-4 flex items-center justify-between"
-              style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }}>
-              <p className="text-sm text-white/50">See the full workflow</p>
-              <button
-                onClick={() => document.querySelector('#workflow')?.scrollIntoView({ behavior: 'smooth' })}
-                className="flex items-center gap-2 px-4 py-2 rounded-[10px] text-sm font-medium text-white/80 transition-colors"
-                style={{ background: 'rgba(255,255,255,0.08)' }}
-              >
-                Workflow <ArrowRight className="w-3.5 h-3.5" />
-              </button>
-            </div>
-          </div>
-
-          {/* Right — numbered feature list + stat card */}
-          <div className="flex flex-col gap-4">
-            {/* Numbered features */}
-            <div className="space-y-0 divide-y divide-[rgba(31,26,34,0.07)] dark:divide-[rgba(211,203,207,0.08)]">
-              {[
-                {
-                  num: '01',
-                  title: 'Natural Language Input',
-                  desc: 'Type or paste any job description — Marii\'s AI parses items, quantities, and specs from plain text.',
-                },
-                {
-                  num: '02',
-                  title: 'Smart Catalog Matching',
-                  desc: 'Every parsed item is matched against your pricing catalog instantly. Rates stay yours, always accurate.',
-                },
-                {
-                  num: '03',
-                  title: 'Professional PDF Output',
-                  desc: 'Branded, print-ready PDFs generated in one click. Your logo, your colors, your signature block.',
-                },
-                {
-                  num: '04',
-                  title: 'Send via Any Channel',
-                  desc: 'WhatsApp, email, download — delivered to your client in seconds. Tracked and logged automatically.',
-                },
-              ].map((feat) => (
-                <div key={feat.num} className="flex gap-5 py-5">
-                  <span
-                    className="font-mono text-[13px] mt-0.5 flex-shrink-0 w-7"
-                    style={{ color: '#6b3550' }}
-                  >
-                    {feat.num}
-                  </span>
-                  <div className="space-y-1">
-                    <p className="font-semibold text-[15px] text-[#1f1a22] dark:text-[#f0e8eb]">{feat.title}</p>
-                    <p className="text-sm leading-relaxed text-[#6f6770]">{feat.desc}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            {/* Plum stat card */}
+      <section className="mx-auto max-w-7xl px-4 pb-14 sm:px-6 lg:px-8">
+        <div className="grid gap-3 md:grid-cols-4">
+          {SOCIAL_PROOF.map((item) => (
             <div
-              className="rounded-[18px] p-6 mt-2"
-              style={{ background: '#6b3550' }}
+              key={item.label}
+              className="rounded-[18px] border border-[rgba(31,26,34,0.07)] bg-white/75 p-4 dark:border-[rgba(211,203,207,0.08)] dark:bg-white/5"
             >
-              <p className="font-serif font-light leading-none tracking-tight text-[#f7eef0]"
-                style={{ fontSize: '3.5rem' }}>
-                10&times;
-              </p>
-              <p className="text-[#f7eef0]/70 text-sm mt-2 leading-relaxed">
-                Faster than building quotes manually in Word or Excel — and every quote looks like it was made by a design agency.
-              </p>
+              <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#6f6770]">{item.label}</p>
+              <p className="mt-2 text-sm font-semibold text-[#1f1a22] dark:text-[#f0e8eb]">{item.value}</p>
             </div>
-          </div>
-
+          ))}
         </div>
       </section>
 
-      {/* ─────────────────────────────────────────────
-          SECTION 4 — CAPABILITIES GRID
-      ──────────────────��────────────────────────── */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-28">
-        <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-12">
-          <h2 className="font-serif font-light leading-[1.08] tracking-[-0.025em] text-[#1f1a22] dark:text-[#f0e8eb]"
-            style={{ fontSize: 'clamp(2rem, 4vw, 3rem)' }}>
-            Everything you need<br />in one place.
+      <section id="preview" className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8 sm:py-28">
+        <div className="mx-auto max-w-4xl text-center">
+          <h2
+            className="font-serif font-light leading-[1.08] tracking-[-0.025em] text-[#1f1a22] dark:text-[#f0e8eb]"
+            style={{ fontSize: 'clamp(2.25rem, 5vw, 3.5rem)' }}
+          >
+            Flawless quotes.
+            <br />
+            Delivered instantly.
           </h2>
-          <p className="text-sm text-[#6f6770] max-w-xs">
-            No integrations to wire up. No extra subscriptions. Marii is the whole system.
+          <p className="mx-auto mt-6 max-w-2xl text-base leading-relaxed text-[#6f6770]">
+            Give clients a stunning digital breakdown or a pristine physical printout. Marii keeps the quote clean,
+            professional, and easy to send.
           </p>
         </div>
 
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {[
-            {
-              icon: MessageSquare,
-              title: 'Conversational AI',
-              desc: 'Powered by Gemini. Understands natural language, context, and even messy customer messages.',
-            },
-            {
-              icon: FileText,
-              title: 'PDF Template Designer',
-              desc: 'Build your quote layout once. Drag and drop, custom fonts, your logo — pixel-perfect every time.',
-            },
-            {
-              icon: Zap,
-              title: 'Pricing Catalog',
-              desc: 'One place for all your rates. Update once, apply to every quote automatically.',
-            },
-            {
-              icon: BarChart3,
-              title: 'Quote Analytics',
-              desc: 'Track acceptance rates, average deal values, and quote volume over time.',
-            },
-            {
-              icon: Smartphone,
-              title: 'Mobile + Desktop',
-              desc: 'Android, iOS, desktop app and browser — same experience on every screen.',
-            },
-            {
-              icon: Shield,
-              title: 'Offline-First Security',
-              desc: 'Your data lives locally. Secure auth, no cloud dependency, POPIA-ready.',
-            },
-          ].map((cap, i) => {
-            const Icon = cap.icon;
+        <div className="mx-auto mt-12 grid gap-6 lg:grid-cols-[minmax(0,1.1fr)_minmax(280px,0.9fr)]">
+          <div
+            className="rounded-[22px] p-4 sm:p-6"
+            style={{
+              background: isDark ? 'rgba(42,36,41,0.72)' : 'rgba(255,255,255,0.72)',
+              border: isDark ? '1px solid rgba(211,203,207,0.08)' : '1px solid rgba(31,26,34,0.07)',
+            }}
+          >
+            <div className="rounded-[18px] border border-[rgba(31,26,34,0.08)] bg-[#fbf6f7] p-5 shadow-[0_18px_45px_-28px_rgba(31,26,34,0.22)] dark:border-[rgba(211,203,207,0.08)] dark:bg-[#231d26] sm:p-8">
+              <div className="flex items-center justify-between gap-4">
+                <div>
+                  <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#6f6770]">Quote preview</p>
+                  <h3 className="mt-2 font-serif text-[1.5rem] font-light text-[#1f1a22] dark:text-[#f0e8eb]">
+                    Premium quote breakdown
+                  </h3>
+                </div>
+                <span className="rounded-full border border-[rgba(107,53,80,0.18)] bg-[#f7eef0] px-3 py-1 text-[11px] font-semibold text-[#6b3550] dark:bg-[#2f2731]">
+                  Print ready
+                </span>
+              </div>
+
+              <div className="mt-6 grid gap-3 sm:grid-cols-2">
+                {['Client details', 'Line items', 'Brand terms', 'Totals + VAT'].map((item) => (
+                  <div
+                    key={item}
+                    className="rounded-[14px] border border-[rgba(31,26,34,0.08)] bg-white px-4 py-4 text-sm text-[#1f1a22] shadow-[0_10px_24px_-18px_rgba(31,26,34,0.18)] dark:border-[rgba(211,203,207,0.08)] dark:bg-white/5 dark:text-[#f0e8eb]"
+                  >
+                    {item}
+                  </div>
+                ))}
+              </div>
+
+              <div className="mt-6 rounded-[18px] bg-[#6b3550] p-5 text-[#f7eef0]">
+                <div className="flex items-end justify-between gap-4">
+                  <div>
+                    <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#f7eef0]/65">Accepted</p>
+                    <p className="mt-1 font-serif text-[2rem] font-light leading-none">R 1,240.00</p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-[11px] uppercase tracking-[0.12em] text-[#f7eef0]/65">Response time</p>
+                    <p className="mt-1 text-sm font-semibold">Under 2 minutes</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex flex-col justify-between rounded-[22px] p-6 sm:p-8" style={{ background: 'rgba(107,53,80,0.08)' }}>
+            <div>
+              <p className="font-mono text-[11px] uppercase tracking-[0.14em] text-[#6b3550]">What clients get</p>
+              <ul className="mt-5 space-y-4">
+                {[
+                  'Web-optimized and mobile-responsive quotes clients can view, accept, and share.',
+                  'Print-ready PDFs that look clean on paper and stay crisp in high resolution.',
+                  'Tailored branding with your logo, custom terms, and product line items in seconds.',
+                ].map((item) => (
+                  <li key={item} className="flex gap-3 text-sm leading-relaxed text-[#1f1a22] dark:text-[#f0e8eb]">
+                    <Check className="mt-0.5 h-4 w-4 flex-shrink-0 text-[#6b3550]" />
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <div className="mt-8 rounded-[18px] border border-[rgba(31,26,34,0.08)] bg-white p-5 dark:border-[rgba(211,203,207,0.08)] dark:bg-white/5">
+              <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#6f6770]">Delivery mode</p>
+              <p className="mt-2 font-serif text-[1.6rem] font-light text-[#1f1a22] dark:text-[#f0e8eb]">
+                Digital breakdown or paper-perfect printout.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="assistants" className="mx-auto max-w-7xl px-4 py-4 sm:px-6 lg:px-8 sm:py-8">
+        <div className="mb-12 max-w-3xl">
+          <h2
+            className="font-serif font-light leading-[1.08] tracking-[-0.025em] text-[#1f1a22] dark:text-[#f0e8eb]"
+            style={{ fontSize: 'clamp(2rem, 4vw, 3rem)' }}
+          >
+            Two AI assistants,
+            <br />
+            one faster workflow.
+          </h2>
+          <p className="mt-4 max-w-2xl text-base leading-relaxed text-[#6f6770]">
+            Marii is built around two assistants that handle the full quoting loop: one creates the quote, the other
+            keeps your catalogue clean and ready for the next enquiry.
+          </p>
+        </div>
+
+        <div className="grid gap-4 lg:grid-cols-2">
+          {ASSISTANTS.map((assistant) => {
+            const Icon = assistant.icon;
+
             return (
               <div
-                key={i}
-                className="p-6 rounded-[18px] group cursor-default transition-all duration-200"
+                key={assistant.title}
+                className="rounded-[22px] p-6"
                 style={{
-                  background: isDark ? 'rgba(42,36,41,0.60)' : 'rgba(255,255,255,0.70)',
+                  background: isDark ? 'rgba(42,36,41,0.64)' : 'rgba(255,255,255,0.75)',
                   border: isDark ? '1px solid rgba(211,203,207,0.08)' : '1px solid rgba(31,26,34,0.07)',
                   boxShadow: '0 1px 2px rgba(31,26,34,0.04), 0 8px 24px -10px rgba(31,26,34,0.04)',
                 }}
               >
-                <div
-                  className="w-10 h-10 rounded-[10px] flex items-center justify-center mb-4"
-                  style={{ background: 'rgba(107,53,80,0.10)' }}
-                >
-                  <Icon className="w-5 h-5" style={{ color: '#6b3550' }} />
+                <div className="mb-5 flex h-11 w-11 items-center justify-center rounded-[12px]" style={{ background: 'rgba(107,53,80,0.10)' }}>
+                  <Icon className="h-5 w-5" style={{ color: BRAND }} />
                 </div>
-                <p className="font-semibold text-[14px] text-[#1f1a22] dark:text-[#f0e8eb] mb-1.5">{cap.title}</p>
-                <p className="text-[13px] leading-relaxed text-[#6f6770]">{cap.desc}</p>
+                <h3 className="text-[1.35rem] font-semibold text-[#1f1a22] dark:text-[#f0e8eb]">{assistant.title}</h3>
+                <p className="mt-3 text-sm leading-relaxed text-[#6f6770]">{assistant.desc}</p>
+
+                <div className="mt-5 grid gap-3 sm:grid-cols-2">
+                  {assistant.points.map((point) => (
+                    <div
+                      key={point}
+                      className="rounded-[14px] border border-[rgba(31,26,34,0.07)] bg-white px-4 py-4 text-sm leading-relaxed text-[#1f1a22] dark:border-[rgba(211,203,207,0.08)] dark:bg-white/5 dark:text-[#f0e8eb]"
+                    >
+                      {point}
+                    </div>
+                  ))}
+                </div>
               </div>
             );
           })}
         </div>
       </section>
 
-      {/* ─────────────────────────────────────────────
-          SECTION 5 — WORKFLOW STEPS
-      ───────────────────────────────────────────── */}
-      <section id="workflow" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8 pb-20 sm:pb-28">
-        <h2 className="font-serif font-light leading-[1.08] tracking-[-0.025em] text-[#1f1a22] dark:text-[#f0e8eb] mb-12"
-          style={{ fontSize: 'clamp(2rem, 4vw, 3rem)' }}>
-          From request to quote<br />in four steps.
-        </h2>
+      <section id="features" className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8 sm:py-28">
+        <div className="mb-12 max-w-3xl">
+          <h2
+            className="font-serif font-light leading-[1.08] tracking-[-0.025em] text-[#1f1a22] dark:text-[#f0e8eb]"
+            style={{ fontSize: 'clamp(2rem, 4vw, 3rem)' }}
+          >
+            Everything the quote engine
+            <br />
+            needs to run cleanly.
+          </h2>
+          <p className="mt-4 max-w-2xl text-base leading-relaxed text-[#6f6770]">
+            This is the practical layer behind the product: fast quoting, catalogue lookup, template control, and the
+            visibility an SME needs to make better sales decisions.
+          </p>
+        </div>
 
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {[
-            { step: '01', title: 'Build your catalog', desc: 'Add services, parts, and rates. Marii stores your pricing logic centrally.' },
-            { step: '02', title: 'Chat the job', desc: 'Paste or type the customer\'s request. Marii extracts every item instantly.' },
-            { step: '03', title: 'Review & refine', desc: 'Edit quantities, add notes, apply discounts — all on one clean screen.' },
-            { step: '04', title: 'Generate & send', desc: 'One tap produces a branded PDF. Send via WhatsApp, email, or download.' },
-          ].map((s) => (
-            <div key={s.step} className="space-y-3">
-              <span
-                className="font-serif font-light"
-                style={{ fontSize: '3.5rem', lineHeight: 1, color: '#6b3550' }}
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {FEATURE_GRID.map((feature) => {
+            const Icon = feature.icon;
+
+            return (
+              <div
+                key={feature.title}
+                className="rounded-[18px] p-6"
+                style={{
+                  background: isDark ? 'rgba(42,36,41,0.60)' : 'rgba(255,255,255,0.75)',
+                  border: isDark ? '1px solid rgba(211,203,207,0.08)' : '1px solid rgba(31,26,34,0.07)',
+                }}
               >
-                {s.step}
-              </span>
-              <p className="font-semibold text-[15px] text-[#1f1a22] dark:text-[#f0e8eb]">{s.title}</p>
-              <p className="text-[13px] leading-relaxed text-[#6f6770]">{s.desc}</p>
-            </div>
-          ))}
+                <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-[10px]" style={{ background: 'rgba(107,53,80,0.10)' }}>
+                  <Icon className="h-5 w-5" style={{ color: BRAND }} />
+                </div>
+                <p className="mb-2 text-[14px] font-semibold text-[#1f1a22] dark:text-[#f0e8eb]">{feature.title}</p>
+                <p className="text-[13px] leading-relaxed text-[#6f6770]">{feature.desc}</p>
+              </div>
+            );
+          })}
         </div>
       </section>
 
-      {/* ─────────────────────────────────────────────
-          SECTION 6 — INDUSTRIES
-      ───────────────────────────────────────────── */}
-      <section id="industries" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 pb-20 sm:pb-28">
-        <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-10">
-          <h2 className="font-serif font-light leading-[1.08] tracking-[-0.025em] text-[#1f1a22] dark:text-[#f0e8eb]"
-            style={{ fontSize: 'clamp(2rem, 4vw, 3rem)' }}>
-            Works for your industry.
-          </h2>
-        </div>
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
-          {[
-            { role: 'Automotive Shops', use: 'Parts + labour with service history tracking' },
-            { role: 'Graphic Designers', use: 'Design packages with revision rounds' },
-            { role: 'Contractors', use: 'Material lists + labour per project scope' },
-            { role: 'Print Shops', use: 'Sizes, finishes, and quantity pricing tiers' },
-            { role: 'Freelancers', use: 'Project rates, retainers, milestone pricing' },
-            { role: 'Event Planners', use: 'Vendor bundles, venues + VAT all-in' },
-            { role: 'Plumbers', use: 'Call-out fees, parts + emergency markups' },
-            { role: 'Photographers', use: 'Session packages with print add-ons' },
-            { role: 'Consultants', use: 'Hourly, project and retainer rate models' },
-          ].map((item, i) => (
-            <div
-              key={i}
-              className="flex items-start gap-3 p-4 rounded-[14px] transition-all duration-200"
-              style={{
-                background: isDark ? 'rgba(42,36,41,0.60)' : 'rgba(255,255,255,0.70)',
-                border: isDark ? '1px solid rgba(211,203,207,0.07)' : '1px solid rgba(31,26,34,0.07)',
-              }}
+      <section id="templates" className="mx-auto max-w-7xl px-4 py-4 sm:px-6 lg:px-8 sm:py-8">
+        <div className="mb-12 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+          <div className="max-w-3xl">
+            <h2
+              className="font-serif font-light leading-[1.08] tracking-[-0.025em] text-[#1f1a22] dark:text-[#f0e8eb]"
+              style={{ fontSize: 'clamp(2rem, 4vw, 3rem)' }}
             >
-              <Check className="w-4 h-4 mt-0.5 flex-shrink-0" style={{ color: '#6b3550' }} />
-              <div>
-                <p className="font-semibold text-[13px] text-[#1f1a22] dark:text-[#f0e8eb]">{item.role}</p>
-                <p className="text-[12px] text-[#6f6770] mt-0.5">{item.use}</p>
+              PDF templates that fit
+              <br />
+              the way you sell.
+            </h2>
+            <p className="mt-4 text-base leading-relaxed text-[#6f6770]">
+              Choose between a standard quote layout and a visual product-led template. Marii also supports multiple
+              currencies, and the currency selector rolls live so the option stays visible without feeling static.
+            </p>
+          </div>
+          <div className="flex items-center gap-3">
+            <span className="font-mono text-[11px] uppercase tracking-[0.14em] text-[#6f6770]">Supported currency</span>
+            <CurrencyTicker />
+          </div>
+        </div>
+
+        <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,0.9fr)]">
+          <div className="grid gap-4 sm:grid-cols-2">
+            {TEMPLATE_CARDS.map((template) => (
+              <div
+                key={template.title}
+                className="rounded-[22px] p-6"
+                style={{
+                  background: isDark ? 'rgba(42,36,41,0.60)' : 'rgba(255,255,255,0.75)',
+                  border: isDark ? '1px solid rgba(211,203,207,0.08)' : '1px solid rgba(31,26,34,0.07)',
+                  boxShadow: '0 1px 2px rgba(31,26,34,0.04), 0 8px 24px -10px rgba(31,26,34,0.04)',
+                }}
+              >
+                <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-[10px]" style={{ background: 'rgba(107,53,80,0.10)' }}>
+                  <FileText className="h-5 w-5" style={{ color: BRAND }} />
+                </div>
+                <p className="text-[15px] font-semibold text-[#1f1a22] dark:text-[#f0e8eb]">{template.title}</p>
+                <p className="mt-2 text-[13px] leading-relaxed text-[#6f6770]">{template.desc}</p>
+              </div>
+            ))}
+          </div>
+
+          <div className="rounded-[22px] p-6" style={{ background: 'rgba(107,53,80,0.08)' }}>
+            <p className="font-mono text-[11px] uppercase tracking-[0.14em] text-[#6b3550]">Why the templates matter</p>
+            <div className="mt-5 space-y-4">
+              <div className="rounded-[18px] border border-[rgba(31,26,34,0.07)] bg-white p-5 dark:border-[rgba(211,203,207,0.08)] dark:bg-white/5">
+                <p className="text-[13px] font-semibold text-[#1f1a22] dark:text-[#f0e8eb]">Standard template</p>
+                <p className="mt-1 text-sm leading-relaxed text-[#6f6770]">
+                  Best for service jobs, line items, and fast quoting where the table matters more than product imagery.
+                </p>
+              </div>
+              <div className="rounded-[18px] border border-[rgba(31,26,34,0.07)] bg-white p-5 dark:border-[rgba(211,203,207,0.08)] dark:bg-white/5">
+                <p className="text-[13px] font-semibold text-[#1f1a22] dark:text-[#f0e8eb]">Image-focused template</p>
+                <p className="mt-1 text-sm leading-relaxed text-[#6f6770]">
+                  Ideal for products, bundles, and work that benefits from photos, details, pricing, and a clean total.
+                </p>
+              </div>
+              <div className="rounded-[18px] border border-[rgba(31,26,34,0.07)] bg-white p-5 dark:border-[rgba(211,203,207,0.08)] dark:bg-white/5">
+                <p className="text-[13px] font-semibold text-[#1f1a22] dark:text-[#f0e8eb]">Currency flexibility</p>
+                <p className="mt-1 text-sm leading-relaxed text-[#6f6770]">
+                  Roll between currencies without breaking the layout, so the same quote can work across different deal
+                  contexts.
+                </p>
               </div>
             </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="use-cases" className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8 sm:py-28">
+        <div className="mb-12 max-w-3xl">
+          <h2
+            className="font-serif font-light leading-[1.08] tracking-[-0.025em] text-[#1f1a22] dark:text-[#f0e8eb]"
+            style={{ fontSize: 'clamp(2rem, 4vw, 3rem)' }}
+          >
+            Use cases that match
+            <br />
+            how Southern African SMEs work.
+          </h2>
+          <p className="mt-4 max-w-2xl text-base leading-relaxed text-[#6f6770]">
+            These are the teams Marii is built for. The language, workflow, and pricing all stay practical for
+            operators who need to move fast and keep the pipeline tidy.
+          </p>
+        </div>
+
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          {USE_CASES.map((item) => (
+            <div
+              key={item.title}
+              className="rounded-[18px] p-5"
+              style={{
+                background: isDark ? 'rgba(42,36,41,0.60)' : 'rgba(255,255,255,0.75)',
+                border: isDark ? '1px solid rgba(211,203,207,0.08)' : '1px solid rgba(31,26,34,0.07)',
+              }}
+            >
+              <p className="text-[14px] font-semibold text-[#1f1a22] dark:text-[#f0e8eb]">{item.title}</p>
+              <p className="mt-2 text-[13px] leading-relaxed text-[#6f6770]">{item.desc}</p>
+            </div>
           ))}
         </div>
       </section>
 
-      {/* ─────────────────────────────────────────────
-          SECTION 7 — WAITLIST CTA
-      ───────────────────────────────────────────── */}
-      <section id="waitlist" className="px-4 sm:px-6 lg:px-8 py-4 pb-16">
+      <section id="testimonials" className="mx-auto max-w-7xl px-4 py-4 sm:px-6 lg:px-8 sm:py-8">
+        <div className="mx-auto max-w-5xl text-center">
+          <p className="font-mono text-[11px] uppercase tracking-[0.14em] text-[#6f6770]">Social proof</p>
+          <h2
+            className="mx-auto mt-4 max-w-3xl font-serif font-light leading-[1.05] tracking-[-0.03em] text-[#1f1a22] dark:text-[#f0e8eb]"
+            style={{ fontSize: 'clamp(2.2rem, 4vw, 3.4rem)' }}
+          >
+            What SMEs say
+            <br />
+            after switching to Marii.
+          </h2>
+          <p className="mx-auto mt-4 max-w-2xl text-sm leading-relaxed text-[#6f6770] sm:text-base">
+            A simple testimonial slider with room for more customer voices as the list grows.
+          </p>
+        </div>
+
+        <div className="relative mx-auto mt-12 overflow-hidden rounded-[36px] border border-[rgba(31,26,34,0.07)] bg-[rgba(255,255,255,0.48)] px-4 py-8 shadow-[0_24px_80px_-56px_rgba(31,26,34,0.35)] dark:border-[rgba(211,203,207,0.08)] dark:bg-[rgba(255,255,255,0.03)] sm:px-8 sm:py-12">
+          <button
+            type="button"
+            aria-label="Previous testimonial"
+            onClick={() => setTestimonialAt(testimonialIndex - 1)}
+            className="absolute left-3 top-1/2 z-20 -translate-y-1/2 rounded-full border border-[rgba(31,26,34,0.08)] bg-white p-2.5 text-[#1f1a22] shadow-[0_14px_30px_-24px_rgba(31,26,34,0.3)] transition-transform hover:scale-105 dark:border-[rgba(211,203,207,0.08)] dark:bg-[#241f27] dark:text-[#f0e8eb]"
+          >
+            <ArrowRight className="h-4 w-4 rotate-180" />
+          </button>
+          <button
+            type="button"
+            aria-label="Next testimonial"
+            onClick={() => setTestimonialAt(testimonialIndex + 1)}
+            className="absolute right-3 top-1/2 z-20 -translate-y-1/2 rounded-full border border-[rgba(31,26,34,0.08)] bg-white p-2.5 text-[#1f1a22] shadow-[0_14px_30px_-24px_rgba(31,26,34,0.3)] transition-transform hover:scale-105 dark:border-[rgba(211,203,207,0.08)] dark:bg-[#241f27] dark:text-[#f0e8eb]"
+          >
+            <ArrowRight className="h-4 w-4" />
+          </button>
+
+          <div className="relative mx-auto max-w-6xl" style={{ height: testimonialShellHeight }}>
+            {[-1, 0, 1].map((offset) => {
+              const testimonial = TESTIMONIALS[(testimonialIndex + offset + TESTIMONIALS.length) % TESTIMONIALS.length];
+              const isCenter = offset === 0;
+              const isLeft = offset < 0;
+              const cardWidth = isCenter ? 'min(88vw, 38rem)' : 'min(74vw, 28rem)';
+              const translateX = isCenter ? '-50%' : isLeft ? '-86%' : '-14%';
+
+              return (
+                <article
+                  key={`${testimonial.name}-${offset}`}
+                  ref={(node) => {
+                    testimonialCardRefs.current[offset + 1] = node;
+                  }}
+                  className="absolute top-1/2 transition-all duration-500 ease-out"
+                  style={{
+                    left: isCenter ? '50%' : isLeft ? '24%' : '76%',
+                    width: cardWidth,
+                    transform: `translateX(${translateX}) translateY(-50%) scale(${isCenter ? 1 : 0.9})`,
+                    opacity: isCenter ? 1 : 0.32,
+                    zIndex: isCenter ? 3 : 1,
+                    filter: isCenter ? 'none' : 'saturate(0.75)',
+                  }}
+                >
+                  <div
+                    className={`rounded-[28px] border bg-white p-6 shadow-[0_22px_50px_-36px_rgba(31,26,34,0.30)] transition-all duration-500 dark:bg-[#241f27] ${
+                      isCenter
+                        ? 'border-[rgba(31,26,34,0.07)] dark:border-[rgba(211,203,207,0.08)]'
+                        : 'border-[rgba(31,26,34,0.04)] dark:border-[rgba(211,203,207,0.05)]'
+                    }`}
+                  >
+                    <p className="text-sm leading-relaxed text-[#1f1a22] dark:text-[#f0e8eb]">
+                      &ldquo;{testimonial.quote}&rdquo;
+                    </p>
+                    <div className="mt-5 flex items-center gap-3">
+                      <div className="flex h-11 w-11 items-center justify-center rounded-full bg-[#f7eef0] text-sm font-semibold text-[#6b3550] dark:bg-white/10 dark:text-[#f0e8eb]">
+                        {testimonial.name.slice(0, 1)}
+                      </div>
+                      <div>
+                        <p className="text-[13px] font-semibold text-[#1f1a22] dark:text-[#f0e8eb]">{testimonial.name}</p>
+                        <p className="text-[12px] text-[#6f6770]">{testimonial.role}</p>
+                      </div>
+                    </div>
+                  </div>
+                </article>
+              );
+            })}
+          </div>
+
+          <div className="mt-4 flex items-center justify-center gap-2">
+            {TESTIMONIALS.map((testimonial, index) => (
+              <button
+                key={`${testimonial.name}-${testimonial.role}`}
+                type="button"
+                aria-label={`Go to testimonial ${index + 1}`}
+                onClick={() => setTestimonialAt(index)}
+                className={`h-2.5 rounded-full transition-all duration-300 ${
+                  index === testimonialIndex
+                    ? 'w-8 bg-[#6b3550]'
+                    : 'w-2.5 bg-[rgba(107,53,80,0.24)] hover:bg-[rgba(107,53,80,0.42)]'
+                }`}
+              />
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section id="pricing" className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8 sm:py-28">
+        <div className="mb-12 max-w-3xl">
+          <h2
+            className="font-serif font-light leading-[1.08] tracking-[-0.025em] text-[#1f1a22] dark:text-[#f0e8eb]"
+            style={{ fontSize: 'clamp(2rem, 4vw, 3rem)' }}
+          >
+            Simple pricing for SMEs
+            <br />
+            that quote often.
+          </h2>
+          <p className="mt-4 text-base leading-relaxed text-[#6f6770]">
+            Every plan starts with a fully unlocked 14-day free trial. No setup fees, cancel anytime. Top-up packs
+            keep busy months moving.
+          </p>
+        </div>
+
+        <div className="grid gap-4 lg:grid-cols-3">
+          {PRICING.map((plan) => (
+            <div
+              key={plan.name}
+              className="relative rounded-[22px] p-6"
+              style={{
+                background: plan.popular ? 'rgba(107,53,80,0.10)' : isDark ? 'rgba(42,36,41,0.60)' : 'rgba(255,255,255,0.72)',
+                border: plan.popular ? '1px solid rgba(107,53,80,0.25)' : isDark ? '1px solid rgba(211,203,207,0.08)' : '1px solid rgba(31,26,34,0.07)',
+                boxShadow: plan.popular ? '0 20px 50px -28px rgba(107,53,80,0.40)' : '0 1px 2px rgba(31,26,34,0.04), 0 8px 24px -10px rgba(31,26,34,0.04)',
+              }}
+            >
+              {plan.popular ? (
+                <span className="absolute right-4 top-4 rounded-full bg-[#6b3550] px-3 py-1 text-[11px] font-semibold text-[#f7eef0]">
+                  Most popular
+                </span>
+              ) : null}
+              <p className="font-mono text-[11px] uppercase tracking-[0.14em] text-[#6f6770]">{plan.name}</p>
+              <h3 className="mt-4 font-serif text-[1.7rem] font-light leading-tight text-[#1f1a22] dark:text-[#f0e8eb]">
+                {plan.label}
+              </h3>
+              <p className="mt-3 text-[2rem] font-light leading-none text-[#6b3550]">{plan.price}</p>
+              <p className="mt-2 text-sm font-semibold uppercase tracking-[0.12em] text-[#6f6770]">{plan.quotes}</p>
+              <p className="mt-4 text-sm leading-relaxed text-[#6f6770]">{plan.fit}</p>
+
+              <div className="mt-5 rounded-[16px] border border-[rgba(31,26,34,0.07)] bg-white p-4 dark:border-[rgba(211,203,207,0.08)] dark:bg-white/5">
+                <p className="text-[12px] font-semibold uppercase tracking-[0.12em] text-[#6b3550]">
+                  {plan.analyticsTitle}
+                </p>
+                <ul className="mt-3 space-y-2">
+                  {plan.analytics.map((item) => (
+                    <li key={item} className="flex gap-2 text-[13px] leading-relaxed text-[#1f1a22] dark:text-[#f0e8eb]">
+                      <Check className="mt-0.5 h-4 w-4 flex-shrink-0 text-[#6b3550]" />
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              <p className="mt-4 text-[13px] leading-relaxed text-[#6f6770]">{plan.why}</p>
+
+              <button
+                type="button"
+                onClick={() => openWaitlist(plan.name)}
+                className="mt-6 inline-flex w-full items-center justify-center rounded-full border border-[rgba(31,26,34,0.08)] bg-white px-4 py-3 text-sm font-semibold text-[#1f1a22] transition-opacity hover:opacity-90 dark:border-[rgba(211,203,207,0.08)] dark:bg-white/5 dark:text-[#f0e8eb]"
+              >
+                Join wait list
+              </button>
+            </div>
+          ))}
+        </div>
+
+        <div className="mt-6 rounded-[20px] border border-[rgba(107,53,80,0.18)] bg-[#6b3550] px-6 py-5 text-[#f7eef0]">
+          <p className="text-sm font-semibold uppercase tracking-[0.12em]">Busy month? Keep the pipeline moving.</p>
+          <p className="mt-2 max-w-3xl text-sm leading-relaxed text-[#f7eef0]/80">
+            On-Demand Quote Packs are sold at a fixed rate of R2 per quote, with a minimum buy of 10 quotes. When a team
+            reaches 90 percent of its allowance, Marii gives a gentle warning. At 100 percent, it prompts an upgrade
+            or top-up so the workflow does not stop mid-sale.
+          </p>
+        </div>
+      </section>
+
+      <section id="faq" className="mx-auto max-w-7xl px-4 pb-20 sm:px-6 lg:px-8 sm:pb-28">
+        <div className="mb-10 max-w-3xl">
+          <h2
+            className="font-serif font-light leading-[1.08] tracking-[-0.025em] text-[#1f1a22] dark:text-[#f0e8eb]"
+            style={{ fontSize: 'clamp(2rem, 4vw, 3rem)' }}
+          >
+            Frequently asked questions.
+          </h2>
+        </div>
+
+        <div className="space-y-3">
+          {FAQS.map((item) => (
+            <details
+              key={item.question}
+              className="group rounded-[18px] border border-[rgba(31,26,34,0.07)] bg-white/75 p-5 open:bg-white dark:border-[rgba(211,203,207,0.08)] dark:bg-white/5"
+            >
+              <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-left">
+                <span className="text-[15px] font-semibold text-[#1f1a22] dark:text-[#f0e8eb]">{item.question}</span>
+                <span className="flex h-8 w-8 items-center justify-center rounded-full bg-[#f0e8eb] text-[#6b3550] transition-transform group-open:rotate-45 dark:bg-white/10">
+                  <ChevronDown className="h-4 w-4" />
+                </span>
+              </summary>
+              <p className="mt-4 max-w-4xl text-sm leading-relaxed text-[#6f6770]">{item.answer}</p>
+            </details>
+          ))}
+        </div>
+      </section>
+
+      <section id="footer-cta" className="px-4 pb-16 sm:px-6 lg:px-8 py-4">
         <div
-          className="max-w-7xl mx-auto rounded-[22px] p-8 sm:p-14"
+          className="mx-auto max-w-7xl rounded-[22px] px-6 py-10 sm:px-10 sm:py-14 lg:px-14"
           style={{
-            background: isDark ? 'rgba(42,36,41,0.80)' : 'rgba(255,255,255,0.80)',
+            background: isDark ? 'rgba(42,36,41,0.80)' : 'rgba(255,255,255,0.82)',
             border: isDark ? '1px solid rgba(211,203,207,0.08)' : '1px solid rgba(31,26,34,0.07)',
             boxShadow: '0 2px 8px rgba(31,26,34,0.04), 0 32px 80px -24px rgba(31,26,34,0.10)',
           }}
         >
-          <div className="max-w-2xl">
-            <p className="font-mono text-[11px] tracking-[0.10em] uppercase text-[#6f6770] mb-4">
-              Early Access
+          <div className="mx-auto max-w-5xl">
+            <p className="font-mono text-[11px] uppercase tracking-[0.10em] text-[#6f6770]">
+              Join the wait list
             </p>
-            <h2
-              className="font-serif font-light leading-[1.08] tracking-[-0.025em] text-[#1f1a22] dark:text-[#f0e8eb] mb-4"
-              style={{ fontSize: 'clamp(2.25rem, 5vw, 3.5rem)' }}
-            >
-              Be first in line.
-            </h2>
-            <p className="text-base leading-relaxed text-[#6f6770] mb-8 max-w-lg">
-              Join the waitlist for early access. First 100 businesses get 3 months free and lifetime early-bird pricing. No credit card needed.
-            </p>
-
-            <form onSubmit={handleSubmit}>
-              <div className="flex flex-col sm:flex-row gap-3 max-w-md">
-                <Input
-                  type="email"
-                  placeholder="your@business.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="flex-1 px-4 py-3 rounded-[12px] text-sm"
-                  style={{
-                    background: isDark ? 'rgba(31,26,34,0.60)' : 'rgba(255,255,255,0.90)',
-                    border: '1px solid rgba(31,26,34,0.14)',
-                    color: isDark ? '#f0e8eb' : '#1f1a22',
-                  }}
-                  required
+            <div className="mt-4 grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.05fr)] lg:items-start">
+              <div>
+                <Image
+                  src={isDark ? brandAssets.logoDark : brandAssets.logoLight}
+                  alt="Marii"
+                  width={600}
+                  height={195}
+                  className="h-[156px] w-auto"
+                  priority
                 />
+                <h2
+                  className="mt-5 max-w-2xl font-serif font-light leading-[1.04] tracking-[-0.025em] text-[#1f1a22] dark:text-[#f0e8eb]"
+                  style={{ fontSize: 'clamp(2.25rem, 5vw, 3.5rem)' }}
+                >
+                  Join the wait list and get one month extra free with 500 quotes.
+                </h2>
+                <p className="mt-4 max-w-xl text-sm leading-relaxed text-[#6f6770] sm:text-base">
+                  When Marii launches, wait list members get an extra month on top of the trial, with 500 quotes
+                  included. Add your details and we will keep you updated.
+                </p>
+                <div className="mt-6 rounded-[18px] border border-[rgba(31,26,34,0.07)] bg-[#f7eef0] p-4 text-sm leading-relaxed text-[#1f1a22] dark:border-[rgba(211,203,207,0.08)] dark:bg-white/5 dark:text-[#f0e8eb]">
+                  Use this if you want a simple way to test Marii before you commit. We will only use your details to
+                  contact you about the launch and product updates.
+                </div>
+              </div>
+
+              <form className="rounded-[22px] border border-[rgba(31,26,34,0.07)] bg-white/75 p-5 shadow-[0_12px_30px_-24px_rgba(31,26,34,0.18)] dark:border-[rgba(211,203,207,0.08)] dark:bg-white/5 sm:p-6" onSubmit={handleWaitlistSubmit}>
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <label className="block">
+                    <span className="mb-2 block text-[11px] font-semibold uppercase tracking-[0.12em] text-[#6f6770]">
+                      Name
+                    </span>
+                    <input
+                      value={formState.name}
+                      onChange={(event) => updateField('name', event.target.value)}
+                      required
+                      className="w-full rounded-[14px] border border-[rgba(31,26,34,0.10)] bg-white px-4 py-3 text-sm text-[#1f1a22] outline-none transition-colors placeholder:text-[#a8a5ac] focus:border-[#6b3550] dark:border-[rgba(211,203,207,0.10)] dark:bg-[#1f1a22] dark:text-[#f0e8eb]"
+                      placeholder="Your name"
+                    />
+                  </label>
+              <label className="block">
+                <span className="mb-2 block text-[11px] font-semibold uppercase tracking-[0.12em] text-[#6f6770]">
+                  Email
+                </span>
+                <input
+                      type="email"
+                      value={formState.email}
+                      onChange={(event) => updateField('email', event.target.value)}
+                      required
+                      className="w-full rounded-[14px] border border-[rgba(31,26,34,0.10)] bg-white px-4 py-3 text-sm text-[#1f1a22] outline-none transition-colors placeholder:text-[#a8a5ac] focus:border-[#6b3550] dark:border-[rgba(211,203,207,0.10)] dark:bg-[#1f1a22] dark:text-[#f0e8eb]"
+                      placeholder="you@company.co.za"
+                    />
+                  </label>
+                </div>
+
+                <div className="mt-4 grid gap-4 sm:grid-cols-2">
+                  <label className="block sm:col-span-2">
+                    <span className="mb-2 block text-[11px] font-semibold uppercase tracking-[0.12em] text-[#6f6770]">
+                      Phone number
+                    </span>
+                    <input
+                      value={formState.phone}
+                      onChange={(event) => updateField('phone', event.target.value)}
+                      required
+                      className="w-full rounded-[14px] border border-[rgba(31,26,34,0.10)] bg-white px-4 py-3 text-sm text-[#1f1a22] outline-none transition-colors placeholder:text-[#a8a5ac] focus:border-[#6b3550] dark:border-[rgba(211,203,207,0.10)] dark:bg-[#1f1a22] dark:text-[#f0e8eb]"
+                      placeholder="+27 ..."
+                    />
+                </label>
+              </div>
+
+                <div className="mt-4">
+                  <label className="block">
+                    <span className="mb-2 block text-[11px] font-semibold uppercase tracking-[0.12em] text-[#6f6770]">
+                      Desired tier
+                    </span>
+                    <select
+                      value={formState.desiredTier}
+                      onChange={(event) => updateField('desiredTier', event.target.value)}
+                      className="w-full rounded-[14px] border border-[rgba(31,26,34,0.10)] bg-white px-4 py-3 text-sm text-[#1f1a22] outline-none transition-colors focus:border-[#6b3550] dark:border-[rgba(211,203,207,0.10)] dark:bg-[#1f1a22] dark:text-[#f0e8eb]"
+                    >
+                      <option value="">No preference</option>
+                      {TIER_OPTIONS.map((tier) => (
+                        <option key={tier} value={tier}>
+                          {tier}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                </div>
+
+                <div className="mt-5 space-y-3 rounded-[18px] border border-[rgba(31,26,34,0.07)] bg-[#f7eef0] p-4 dark:border-[rgba(211,203,207,0.08)] dark:bg-white/5">
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#6f6770]">
+                    Marketing consent
+                  </p>
+                  <label className="flex cursor-pointer items-start gap-3 text-sm leading-relaxed text-[#1f1a22] dark:text-[#f0e8eb]">
+                    <input
+                      type="checkbox"
+                      checked={formState.emailMarketing}
+                      onChange={(event) => updateField('emailMarketing', event.target.checked)}
+                      className="mt-1 h-4 w-4 rounded border-[rgba(31,26,34,0.18)] text-[#6b3550] focus:ring-[#6b3550]"
+                    />
+                    <span>I agree to be contacted by email about launch updates and product news.</span>
+                  </label>
+                  <label className="flex cursor-pointer items-start gap-3 text-sm leading-relaxed text-[#1f1a22] dark:text-[#f0e8eb]">
+                    <input
+                      type="checkbox"
+                      checked={formState.whatsappMarketing}
+                      onChange={(event) => updateField('whatsappMarketing', event.target.checked)}
+                      className="mt-1 h-4 w-4 rounded border-[rgba(31,26,34,0.18)] text-[#6b3550] focus:ring-[#6b3550]"
+                    />
+                    <span>I agree to be contacted by WhatsApp about launch updates and product news.</span>
+                  </label>
+                </div>
+
                 <button
                   type="submit"
-                  className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-[12px] text-sm font-semibold whitespace-nowrap transition-opacity duration-200 hover:opacity-90"
-                  style={{ background: '#6b3550', color: '#f7eef0' }}
+                  disabled={submitState === 'submitting'}
+                  className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-full px-6 py-3 text-sm font-semibold transition-opacity duration-200 hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-70"
+                  style={{ background: BRAND, color: PAPER }}
                 >
-                  Join Waitlist
-                  <ArrowRight className="w-4 h-4" />
+                  {submitState === 'submitting' ? 'Sending...' : 'Join wait list'}
+                  <ArrowRight className="h-4 w-4" />
                 </button>
-              </div>
-              {submitted && (
-                <p className="mt-3 text-sm font-medium" style={{ color: '#6b3550' }}>
-                  You&apos;re on the list. We&apos;ll be in touch soon.
+
+                <p className="mt-3 text-sm text-[#6f6770]">
+                  Wait list members get one extra month and 500 quotes when we launch. Desired tier is optional.
                 </p>
-              )}
-            </form>
+                {submitMessage ? (
+                  <p
+                    className={`mt-3 rounded-[14px] px-4 py-3 text-sm ${
+                      submitState === 'success'
+                        ? 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-300'
+                        : 'bg-[#6b3550]/10 text-[#6b3550] dark:text-[#f0e8eb]'
+                    }`}
+                  >
+                    {submitMessage}
+                  </p>
+                ) : null}
+              </form>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* ─────────────────────────────────────────────
-          FOOTER
-      ───────────────────────────────────────────── */}
-      <footer className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10"
-        style={{ borderTop: '1px solid rgba(31,26,34,0.07)' }}>
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
+      <footer className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8" style={{ borderTop: `1px solid ${softBorder}` }}>
+        <div className="flex flex-col items-start justify-between gap-6 sm:flex-row sm:items-center">
           <div>
             <Image
-              src={isDark ? '/marii-logo-white.svg' : '/marii-logo-black.svg'}
+              src={isDark ? brandAssets.logoDark : brandAssets.logoLight}
               alt="Marii"
               width={80}
               height={26}
-              className="h-6 w-auto mb-2"
+              className="mb-2 h-6 w-auto"
             />
-            <p className="font-mono text-[11px] tracking-widest uppercase text-[#6f6770]">
+            <p className="font-mono text-[11px] uppercase tracking-widest text-[#6f6770]">
               Built for Southern Africa
             </p>
           </div>
+
           <nav className="flex gap-6">
             {[
-              { label: 'Features', href: '#features' },
-              { label: 'Workflow', href: '#workflow' },
-              { label: 'Industries', href: '#industries' },
-              { label: 'Waitlist', href: '#waitlist' },
-            ].map((l) => (
+              { label: 'Preview', href: 'preview' },
+              { label: 'Assistants', href: 'assistants' },
+              { label: 'Templates', href: 'templates' },
+              { label: 'Pricing', href: 'pricing' },
+              { label: 'FAQ', href: 'faq' },
+            ].map((item) => (
               <a
-                key={l.href}
-                href={l.href}
-                onClick={(e) => { e.preventDefault(); document.querySelector(l.href)?.scrollIntoView({ behavior: 'smooth' }); }}
-                className="text-[13px] text-[#6f6770] hover:text-[#1f1a22] dark:hover:text-[#f0e8eb] transition-colors duration-200"
+                key={item.href}
+                href={`#${item.href}`}
+                onClick={(e) => {
+                  e.preventDefault();
+                  scrollToSection(item.href);
+                }}
+                className="text-[13px] text-[#6f6770] transition-colors duration-200 hover:text-[#1f1a22] dark:hover:text-[#f0e8eb]"
               >
-                {l.label}
+                {item.label}
               </a>
             ))}
           </nav>
-          <p className="font-mono text-[11px] text-[#6f6770]/60 tracking-wide">
-            &copy; 2026 Marii
-          </p>
+
+          <p className="font-mono text-[11px] tracking-wide text-[#6f6770]/60">&copy; 2026 Marii</p>
         </div>
       </footer>
-
     </main>
   );
 }

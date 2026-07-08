@@ -1,28 +1,29 @@
 import { Analytics } from '@vercel/analytics/next'
 import type { Metadata, Viewport } from 'next'
 import { ThemeProvider } from '@/components/theme-provider'
+import { brandAssets } from '@/lib/brand-assets'
 import './globals.css'
 
 export const metadata: Metadata = {
-  title: 'Marii - Instant Quotes, Built Your Way',
-  description: 'AI-powered quote assistant for Southern African businesses. Turn casual requests into professional PDF quotes in seconds.',
+  title: 'Marii v2 - Instant Quotes for Southern African SMEs',
+  description: 'Quote-first AI for Southern African SMEs. Turn messages, voice notes, and product lists into professional PDF quotes in seconds.',
   generator: 'v0.app',
   icons: {
     icon: [
       {
-        url: '/icon-light-32x32.png',
+        url: brandAssets.favicon32,
         media: '(prefers-color-scheme: light)',
       },
       {
-        url: '/icon-dark-32x32.png',
+        url: brandAssets.favicon32,
         media: '(prefers-color-scheme: dark)',
       },
       {
-        url: '/icon.svg',
-        type: 'image/svg+xml',
+        url: brandAssets.favicon192,
+        type: 'image/png',
       },
     ],
-    apple: '/apple-icon.png',
+    apple: brandAssets.appleTouchIcon,
   },
 }
 

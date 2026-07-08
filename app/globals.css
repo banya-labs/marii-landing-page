@@ -5,26 +5,56 @@
 
 @custom-variant dark (&:is(.dark *));
 
-@keyframes flip-rotate {
-  0% {
-    opacity: 1;
-    transform: rotateX(0deg) rotateZ(0deg);
+html {
+  scroll-behavior: smooth;
+}
+
+@keyframes hero-scroll {
+  from {
+    transform: translateX(0);
   }
-  50% {
-    opacity: 0;
-    transform: rotateX(90deg) rotateZ(180deg);
-  }
-  100% {
-    opacity: 1;
-    transform: rotateX(180deg) rotateZ(360deg);
+  to {
+    transform: translateX(-50%);
   }
 }
 
-.flip-rotate-word {
-  display: inline-block;
-  animation: flip-rotate 4s ease-in-out infinite;
-  perspective: 1000px;
-  transform-style: preserve-3d;
+@keyframes news-ticker-scroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes testimonial-drift {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+    opacity: 0.22;
+  }
+  50% {
+    transform: translate3d(0, -10px, 0);
+    opacity: 0.36;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .animate-\[hero-scroll_24s_linear_infinite\] {
+    animation: none !important;
+  }
+
+  .animate-\[news-ticker-scroll_28s_linear_infinite\] {
+    animation: none !important;
+  }
+
+  [style*='testimonial-drift'] {
+    animation: none !important;
+  }
 }
 
 @theme inline {
