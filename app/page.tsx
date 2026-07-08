@@ -937,33 +937,56 @@ export default function Home() {
           </p>
         </div>
 
-        <div className="grid gap-4 lg:grid-cols-2">
-          {ASSISTANTS.map((assistant) => {
+        <div className="space-y-12 lg:space-y-16">
+          {ASSISTANTS.map((assistant, index) => {
             const Icon = assistant.icon;
+            const isEven = index % 2 === 0;
 
             return (
               <div
                 key={assistant.title}
-                className="rounded-[22px] p-6"
-                style={{
-                  background: isDark ? 'rgba(42,36,41,0.64)' : 'rgba(255,255,255,0.75)',
-                  border: isDark ? '1px solid rgba(211,203,207,0.08)' : '1px solid rgba(31,26,34,0.07)',
-                  boxShadow: '0 1px 2px rgba(31,26,34,0.04), 0 8px 24px -10px rgba(31,26,34,0.04)',
-                }}
+                className={`flex flex-col gap-8 sm:gap-10 ${isEven ? 'lg:flex-row' : 'lg:flex-row-reverse'} lg:items-start lg:gap-16`}
               >
-                <div className="mb-5 flex h-11 w-11 items-center justify-center rounded-[12px]" style={{ background: 'rgba(107,53,80,0.10)' }}>
-                  <Icon className="h-5 w-5" style={{ color: BRAND }} />
+                {/* Left side - Title, Description, and Icon */}
+                <div className="flex-1 flex flex-col">
+                  <div className="flex items-start gap-4 mb-6">
+                    <div 
+                      className="flex-shrink-0 flex h-16 w-16 items-center justify-center rounded-2xl" 
+                      style={{ background: 'rgba(107,53,80,0.12)' }}
+                    >
+                      <Icon className="h-8 w-8" style={{ color: BRAND }} />
+                    </div>
+                    <div>
+                      <p className="text-[12px] uppercase tracking-[0.14em] font-semibold text-[#a8a5ac] dark:text-[#8d8691]">Assistant {index + 1}</p>
+                      <h3 className="mt-2 text-2xl sm:text-3xl font-semibold text-[#1f1a22] dark:text-[#f0e8eb]">{assistant.title}</h3>
+                    </div>
+                  </div>
+                  <p className="text-base leading-relaxed text-[#6f6770] dark:text-[#b8adb5] max-w-md">{assistant.desc}</p>
                 </div>
-                <h3 className="text-[1.35rem] font-semibold text-[#1f1a22] dark:text-[#f0e8eb]">{assistant.title}</h3>
-                <p className="mt-3 text-sm leading-relaxed text-[#6f6770]">{assistant.desc}</p>
 
-                <div className="mt-5 grid gap-3 sm:grid-cols-2">
-                  {assistant.points.map((point) => (
+                {/* Right side - Feature Points */}
+                <div className="flex-1 grid gap-3 sm:grid-cols-2">
+                  {assistant.points.map((point, pointIndex) => (
                     <div
                       key={point}
-                      className="rounded-[14px] border border-[rgba(31,26,34,0.07)] bg-white px-4 py-4 text-sm leading-relaxed text-[#1f1a22] dark:border-[rgba(211,203,207,0.08)] dark:bg-white/5 dark:text-[#f0e8eb]"
+                      className="group relative rounded-[18px] p-4 overflow-hidden transition-all hover:shadow-md"
+                      style={{
+                        background: isDark ? 'rgba(42,36,41,0.60)' : 'rgba(255,255,255,0.60)',
+                        border: isDark ? '1px solid rgba(211,203,207,0.08)' : '1px solid rgba(31,26,34,0.07)',
+                      }}
                     >
-                      {point}
+                      {/* Accent dot on top left */}
+                      <div className="absolute top-0 left-0 w-1 h-1 rounded-full mt-3 ml-3" style={{ background: BRAND }}/>
+                      
+                      <div className="flex gap-3">
+                        <div 
+                          className="flex-shrink-0 flex h-6 w-6 items-center justify-center rounded text-xs font-bold" 
+                          style={{ background: 'rgba(107,53,80,0.15)', color: BRAND }}
+                        >
+                          {pointIndex + 1}
+                        </div>
+                        <p className="text-sm leading-relaxed text-[#1f1a22] dark:text-[#f0e8eb]">{point}</p>
+                      </div>
                     </div>
                   ))}
                 </div>
