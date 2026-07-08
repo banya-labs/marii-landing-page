@@ -203,24 +203,24 @@ const TESTIMONIALS = [
 const PRICING = [
   {
     name: 'Starter',
-    label: 'The Deal Finder',
+    label: 'Just Started',
     monthlyPrice: 249,
     quotes: '100 quotes per month',
-    fit: 'For freelancers, solo operators, and micro-studios testing the waters or managing a slow-and-steady stream of leads.',
+    fit: 'For freelancers and solo operators getting started. Test the system, build your process, prove the ROI before scaling.',
     analyticsTitle: 'Basic Pipeline Visibility',
     analytics: [
       'Total pipeline value: see the total monetary value of all quotes generated.',
       'Win / loss count: simple counters for accepted vs rejected quotes.',
       'Client leaderboard: top 5 clients by total quoted value.',
     ],
-    why: 'Low friction, clean dashboard, and a faster route away from messy PDF templates.',
+    why: 'Perfect entry point to eliminate manual quoting and prove the time you&apos;ll save.',
   },
   {
     name: 'Growth',
-    label: 'The Pipeline Optimizer',
+    label: 'Growing Fast',
     monthlyPrice: 599,
     quotes: '400 quotes per month',
-    fit: 'For established SMEs and growing teams with a steady flow of daily enquiries.',
+    fit: 'For teams that found product-market fit. Handle daily quote volume without the admin headache. This is where most SMEs thrive.',
     analyticsTitle: 'Conversion and Product Dynamics',
     analytics: [
       'Everything in Starter.',
@@ -228,15 +228,15 @@ const PRICING = [
       'Product and service interest index: see what gets asked about most and least.',
       'Loss analysis: track why quotes fail, such as price or timing.',
     ],
-    why: 'The sweet spot for an SME that wants to tighten sales, see real demand, and improve close rates.',
+    why: 'Get the analytics you need to scale faster and smarter without hiring extra admin.',
     popular: true,
   },
   {
     name: 'Scale',
-    label: 'The Revenue Engine',
+    label: 'Enterprise Ready',
     monthlyPrice: 1199,
     quotes: '1,000 quotes per month',
-    fit: 'For high-volume sales operations, agencies, and small teams running heavier quote-to-close cycles.',
+    fit: 'For high-volume operations that need speed at scale. Unlimited quotes, advanced analytics, priority support. Built for revenue teams that can&apos;t afford downtime.',
     analyticsTitle: 'Advanced Temporal and Predictive Insights',
     analytics: [
       'Everything in Growth.',
@@ -244,7 +244,7 @@ const PRICING = [
       'Quote velocity and age: time spent pending before a client decides.',
       'Team performance metrics: highest-value quotes and best conversion rates.',
     ],
-    why: 'Understanding speed and timing at volume is worth real revenue when the month gets busy.',
+    why: 'Maximize revenue at volume. Every hour saved at scale compounds into real business growth.',
   },
 ];
 
