@@ -446,14 +446,6 @@ function NavChrome({
                   {item.label}
                 </a>
               ))}
-              <button
-                type="button"
-                onClick={onOpenWaitlist}
-                className="mt-1 inline-flex items-center justify-center rounded-full px-4 py-3 text-sm font-semibold text-[#f7eef0]"
-                style={{ background: BRAND }}
-              >
-                Join waitlist
-              </button>
             </div>
           </div>
         </div>
@@ -1162,11 +1154,11 @@ export default function Home() {
             </p>
           </div>
 
-          <div className="inline-flex rounded-full border border-[rgba(107,53,80,0.14)] bg-[#f7eef0] p-1 dark:border-[rgba(211,203,207,0.08)] dark:bg-white/5">
+          <div className="inline-flex w-full rounded-full border border-[rgba(107,53,80,0.14)] bg-[#f7eef0] p-1 dark:border-[rgba(211,203,207,0.08)] dark:bg-white/5 sm:w-auto">
             <button
               type="button"
               onClick={() => setBillingCycle('monthly')}
-              className={`rounded-full px-4 py-2 text-sm font-semibold transition-colors ${
+              className={`flex-1 rounded-full px-4 py-2 text-sm font-semibold transition-colors sm:flex-none ${
                 billingCycle === 'monthly'
                   ? 'bg-[#6b3550] text-[#f7eef0] shadow-[0_10px_20px_-14px_rgba(107,53,80,0.45)]'
                   : 'text-[#6f6770] hover:text-[#1f1a22] dark:text-[#cfc7cb] dark:hover:text-[#f0e8eb]'
@@ -1177,7 +1169,7 @@ export default function Home() {
             <button
               type="button"
               onClick={() => setBillingCycle('yearly')}
-              className={`rounded-full px-4 py-2 text-sm font-semibold transition-colors ${
+              className={`flex-1 rounded-full px-4 py-2 text-sm font-semibold transition-colors sm:flex-none ${
                 billingCycle === 'yearly'
                   ? 'bg-[#6b3550] text-[#f7eef0] shadow-[0_10px_20px_-14px_rgba(107,53,80,0.45)]'
                   : 'text-[#6f6770] hover:text-[#1f1a22] dark:text-[#cfc7cb] dark:hover:text-[#f0e8eb]'
