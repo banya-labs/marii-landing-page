@@ -143,10 +143,6 @@ const USE_CASES = [
     title: 'Logistics & Transport',
     desc: 'Freight quotes depend on weight, distance, and urgency. Your catalogue stores zone pricing and rates. Marii delivers quotes before your customer hangs up.',
   },
-  {
-    title: 'Automotive & Repair Shops',
-    desc: 'Diagnostics lead to parts and labour quotes. Skip the manual spreadsheet. Marii generates accurate, itemized invoices customers trust and approve instantly.',
-  },
 ];
 
 const TESTIMONIALS = [
@@ -1048,16 +1044,17 @@ export default function Home() {
           </p>
         </div>
 
-        <div className="grid gap-4 sm:gap-5 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 lg:auto-rows-max">
+        <div className="grid gap-4 sm:gap-5 grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 lg:auto-rows-max">
           {USE_CASES.map((item, index) => {
             // Create varying heights for visual interest (bento style)
-            const heights = ['lg:row-span-1', 'lg:row-span-1', 'lg:row-span-2', 'lg:row-span-1', 'lg:row-span-1', 'lg:row-span-2'];
+            const heights = ['lg:row-span-1', 'lg:row-span-2', 'lg:row-span-1', 'lg:row-span-1', 'lg:row-span-2'];
             const heightClass = heights[index % heights.length];
 
             return (
-              <div
+              <button
                 key={item.title}
-                className={`group relative rounded-[22px] p-6 overflow-hidden transition-all hover:shadow-lg ${heightClass}`}
+                onClick={() => openWaitlist()}
+                className={`group relative rounded-[22px] p-6 overflow-hidden transition-all hover:shadow-lg text-left bg-transparent border-0 cursor-pointer w-full h-full ${heightClass}`}
                 style={{
                   background: isDark ? 'rgba(42,36,41,0.60)' : 'rgba(255,255,255,0.75)',
                   border: isDark ? '1px solid rgba(211,203,207,0.08)' : '1px solid rgba(31,26,34,0.07)',
@@ -1082,17 +1079,17 @@ export default function Home() {
                     </p>
                   </div>
                   
-                  {/* Hover CTA indicator */}
+                  {/* Get Started CTA indicator */}
                   <div className="mt-6 pt-6 border-t border-[rgba(107,53,80,0.08)] dark:border-[rgba(211,203,207,0.04)] opacity-0 group-hover:opacity-100 transition-opacity">
                     <span className="text-xs font-semibold text-[#6b3550] dark:text-[#d4a5bf] flex items-center gap-2">
-                      Learn more
+                      Get started
                       <svg className="w-3 h-3 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                       </svg>
                     </span>
                   </div>
                 </div>
-              </div>
+              </button>
             );
           })}
         </div>
