@@ -388,6 +388,15 @@ function NavChrome({
         <div className="flex items-center justify-self-end gap-2">
           <button
             type="button"
+            onClick={onOpenWaitlist}
+            className={`hidden md:inline-flex h-11 items-center gap-2 rounded-full px-4 text-sm font-semibold transition-opacity duration-200 hover:opacity-95`}
+            style={{ background: BRAND, color: PAPER }}
+          >
+            Join waitlist
+          </button>
+
+          <button
+            type="button"
             onClick={toggleTheme}
             className={iconButtonClassName}
             aria-label="Toggle theme"
