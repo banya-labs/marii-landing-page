@@ -42,18 +42,27 @@ const HERO_AUDIENCE_TITLES = [
 ];
 const WAITLIST_WORKER_URL = process.env.NEXT_PUBLIC_WAITLIST_WORKER_URL ?? '';
 const NAV_ITEMS = [
-  { label: 'Preview', href: 'preview' },
-  { label: 'Assistants', href: 'assistants' },
   { label: 'Templates', href: 'templates' },
+  { label: 'AI Assistants', href: 'assistants' },
+  { label: 'Features', href: 'features' },
+  { label: 'Use Cases', href: 'use-cases' },
+  { label: 'Testimonials', href: 'testimonials' },
   { label: 'Pricing', href: 'pricing' },
+  { label: 'FAQ', href: 'faq' },
 ] as const;
+const SECTION_IDS = NAV_ITEMS.map((item) => item.href);
 const TIER_OPTIONS = ['Starter', 'Growth', 'Scale'];
+const BILLING_SAVE_RATE = 0.1;
 const SOCIAL_PROOF = [
   { label: 'Built for SMEs', value: 'Southern Africa first' },
   { label: 'Quote output', value: 'PDF ready in seconds' },
   { label: 'Language', value: 'Natural language in, quote out' },
   { label: 'Currencies', value: 'ZAR, USD, BWP, NAD, EUR' },
 ];
+
+function formatRand(amount: number) {
+  return `R${new Intl.NumberFormat('en-ZA').format(Math.round(amount))}`;
+}
 
 const ASSISTANTS = [
   {
@@ -84,7 +93,7 @@ const FEATURE_GRID = [
   {
     icon: MessageSquare,
     title: 'Natural language quoting',
-    desc: 'Turn raw customer requests into structured quotes without forcing staff to fill in forms first.',
+    desc: 'Turn customer messages into structured quotes without making your team start from a blank form.',
   },
   {
     icon: PackageSearch,
@@ -99,7 +108,7 @@ const FEATURE_GRID = [
   {
     icon: Layers3,
     title: 'Template flexibility',
-    desc: 'Switch between table-based and image-led quote templates without rebuilding the workflow.',
+    desc: 'Switch between a simple table quote and a product-led layout without rebuilding the workflow.',
   },
   {
     icon: Globe2,
@@ -110,17 +119,6 @@ const FEATURE_GRID = [
     icon: BarChart3,
     title: 'Pipeline visibility',
     desc: 'See what is getting quoted, what is winning, and what products are driving demand.',
-  },
-];
-
-const TEMPLATE_CARDS = [
-  {
-    title: 'Standard template',
-    desc: 'A text-first layout with a neat table of products, quantities, unit prices, VAT, and a total at the bottom.',
-  },
-  {
-    title: 'Image-focused template',
-    desc: 'A visual quote that showcases products with images, details, pricing, and a clear total at the end.',
   },
 ];
 
@@ -206,7 +204,7 @@ const PRICING = [
   {
     name: 'Starter',
     label: 'The Deal Finder',
-    price: 'R249 / mo',
+    monthlyPrice: 249,
     quotes: '100 quotes per month',
     fit: 'For freelancers, solo operators, and micro-studios testing the waters or managing a slow-and-steady stream of leads.',
     analyticsTitle: 'Basic Pipeline Visibility',
@@ -220,7 +218,7 @@ const PRICING = [
   {
     name: 'Growth',
     label: 'The Pipeline Optimizer',
-    price: 'R599 / mo',
+    monthlyPrice: 599,
     quotes: '400 quotes per month',
     fit: 'For established SMEs and growing teams with a steady flow of daily enquiries.',
     analyticsTitle: 'Conversion and Product Dynamics',
@@ -236,7 +234,7 @@ const PRICING = [
   {
     name: 'Scale',
     label: 'The Revenue Engine',
-    price: 'R1,199 / mo',
+    monthlyPrice: 1199,
     quotes: '1,000 quotes per month',
     fit: 'For high-volume sales operations, agencies, and small teams running heavier quote-to-close cycles.',
     analyticsTitle: 'Advanced Temporal and Predictive Insights',
@@ -320,8 +318,155 @@ function AudienceTicker() {
   );
 }
 
+function NavChrome({
+  floating,
+  isDark,
+  toggleTheme,
+  mobileMenuOpen,
+  toggleMobileMenu,
+  onNavigate,
+  onOpenWaitlist,
+  activeSection,
+}: {
+  floating?: boolean;
+  isDark: boolean;
+  toggleTheme: () => void;
+  mobileMenuOpen: boolean;
+  toggleMobileMenu: () => void;
+  onNavigate: (href: string) => void;
+  onOpenWaitlist: () => void;
+  activeSection: string;
+}) {
+  const wrapperClassName = floating
+    ? 'pointer-events-auto mx-auto w-full max-w-7xl rounded-full border border-[rgba(31,26,34,0.08)] bg-[#f7eef0]/92 px-3 py-2 shadow-[0_18px_44px_-26px_rgba(31,26,34,0.28)] backdrop-blur-md dark:border-[rgba(211,203,207,0.10)] dark:bg-[#241f27]/88'
+    : 'mx-auto w-full max-w-7xl';
+  const rowClassName = floating
+    ? 'grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-2 sm:gap-3'
+    : 'grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3';
+  const navPillClassName =
+    'flex w-fit items-center justify-center gap-1 rounded-full border border-[rgba(107,53,80,0.12)] bg-[rgba(107,53,80,0.10)] px-2 py-1.5 shadow-[0_10px_22px_-18px_rgba(107,53,80,0.22)] dark:border-[rgba(211,203,207,0.08)] dark:bg-[rgba(255,255,255,0.05)]';
+  const actionButtonClassName =
+    'inline-flex h-11 items-center gap-2 rounded-full px-4 text-sm font-semibold transition-opacity duration-200 hover:opacity-95 sm:h-12 sm:px-6';
+  const iconButtonClassName =
+    'inline-flex h-11 w-11 items-center justify-center rounded-full border border-[rgba(31,26,34,0.08)] bg-white/70 text-[#1f1a22] transition-colors duration-200 hover:bg-white dark:border-[rgba(211,203,207,0.10)] dark:bg-white/5 dark:text-[#f0e8eb]';
+
+  return (
+    <div className={wrapperClassName}>
+      <div className={rowClassName}>
+        <Image
+          src={isDark ? brandAssets.logoDark : brandAssets.logoLight}
+          alt="Marii"
+          width={138}
+          height={45}
+          className="h-[36px] w-auto justify-self-start sm:h-[41px]"
+          priority={!floating}
+        />
+
+        <div className="hidden min-w-0 justify-self-center md:flex">
+          <div className={navPillClassName}>
+            {NAV_ITEMS.map((item) => (
+              <a
+                key={item.href}
+                href={`#${item.href}`}
+                onClick={(e) => {
+                  e.preventDefault();
+                  onNavigate(item.href);
+                }}
+                aria-current={activeSection === item.href ? 'page' : undefined}
+                className={`whitespace-nowrap rounded-full px-4 py-1.5 text-sm font-medium transition-colors duration-200 ${
+                  activeSection === item.href
+                    ? 'bg-[#6b3550] text-[#f7eef0] shadow-[0_10px_20px_-12px_rgba(107,53,80,0.45)]'
+                    : 'text-[#4b313a] hover:bg-[rgba(107,53,80,0.16)] hover:text-[#1f1a22] dark:text-[#e8dfe2] dark:hover:bg-white/10 dark:hover:text-[#f0e8eb]'
+                }`}
+              >
+                {item.label}
+              </a>
+            ))}
+          </div>
+        </div>
+
+        <div className="flex items-center justify-self-end gap-2">
+          <button
+            type="button"
+            onClick={onOpenWaitlist}
+            className={actionButtonClassName}
+            style={{ background: BRAND, color: PAPER }}
+          >
+            Join waitlist
+          </button>
+
+          <button
+            type="button"
+            onClick={toggleTheme}
+            className={iconButtonClassName}
+            aria-label="Toggle theme"
+          >
+            {isDark ? <Sun className="h-4 w-4 text-[#6f6770]" /> : <Moon className="h-4 w-4 text-[#6f6770]" />}
+          </button>
+
+          <button
+            type="button"
+            onClick={toggleMobileMenu}
+            className={`${iconButtonClassName} md:hidden`}
+            aria-label="Toggle menu"
+            aria-expanded={mobileMenuOpen}
+          >
+            {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+          </button>
+        </div>
+      </div>
+
+      <div
+        className={`md:hidden ${
+          mobileMenuOpen ? 'mt-3 grid grid-rows-[1fr]' : 'grid grid-rows-[0fr]'
+        } transition-[grid-template-rows] duration-300 ease-out`}
+      >
+        <div className="overflow-hidden">
+          <div
+            className={`rounded-[22px] border border-[rgba(31,26,34,0.07)] ${
+              floating ? 'bg-white/75' : 'bg-white/80'
+            } p-3 dark:border-[rgba(211,203,207,0.08)] dark:bg-white/5`}
+          >
+            <div className="grid gap-2">
+              {NAV_ITEMS.map((item) => (
+                <a
+                  key={item.href}
+                  href={`#${item.href}`}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    onNavigate(item.href);
+                  }}
+                  aria-current={activeSection === item.href ? 'page' : undefined}
+                  className={`rounded-full px-4 py-3 text-sm font-medium transition-colors ${
+                    activeSection === item.href
+                      ? 'bg-[#6b3550] text-[#f7eef0] shadow-[0_10px_20px_-12px_rgba(107,53,80,0.45)]'
+                      : 'text-[#1f1a22] hover:bg-[rgba(107,53,80,0.12)] dark:text-[#f0e8eb] dark:hover:bg-white/10'
+                  }`}
+                >
+                  {item.label}
+                </a>
+              ))}
+              <button
+                type="button"
+                onClick={onOpenWaitlist}
+                className="mt-1 inline-flex items-center justify-center rounded-full px-4 py-3 text-sm font-semibold text-[#f7eef0]"
+                style={{ background: BRAND }}
+              >
+                Join waitlist
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function Home() {
   const { isDark, toggleTheme } = useTheme();
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [activeSection, setActiveSection] = useState(NAV_ITEMS[0].href);
+  const [billingCycle, setBillingCycle] = useState<'monthly' | 'yearly'>('monthly');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [testimonialIndex, setTestimonialIndex] = useState(0);
   const [testimonialShellHeight, setTestimonialShellHeight] = useState(420);
@@ -366,6 +511,54 @@ export default function Home() {
     }, 4000);
 
     return () => window.clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    const onScroll = () => {
+      setIsScrolled(window.scrollY > 24);
+    };
+
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+
+    return () => {
+      window.removeEventListener('scroll', onScroll);
+    };
+  }, []);
+
+  useEffect(() => {
+    const updateActiveSection = () => {
+      const sections = SECTION_IDS.map((id) => document.getElementById(id)).filter(
+        (section): section is HTMLElement => Boolean(section),
+      );
+
+      if (!sections.length) {
+        return;
+      }
+
+      const scrollMarker = window.scrollY + 160;
+      let currentSection = sections[0].id;
+
+      for (const section of sections) {
+        if (section.offsetTop <= scrollMarker) {
+          currentSection = section.id;
+          continue;
+        }
+
+        break;
+      }
+
+      setActiveSection(currentSection);
+    };
+
+    updateActiveSection();
+    window.addEventListener('scroll', updateActiveSection, { passive: true });
+    window.addEventListener('resize', updateActiveSection);
+
+    return () => {
+      window.removeEventListener('scroll', updateActiveSection);
+      window.removeEventListener('resize', updateActiveSection);
+    };
   }, []);
 
   useLayoutEffect(() => {
@@ -445,127 +638,54 @@ export default function Home() {
             boxShadow: '0 2px 8px rgba(31,26,34,0.06), 0 32px 80px -24px rgba(31,26,34,0.12)',
           }}
         >
-          <div className="sticky top-4 z-50 px-4 pt-4 sm:px-6 md:px-10">
-            <div className="mx-auto rounded-full border border-[rgba(31,26,34,0.08)] bg-[#f7eef0]/92 px-3 py-2 shadow-[0_18px_44px_-26px_rgba(31,26,34,0.28)] backdrop-blur-md dark:border-[rgba(211,203,207,0.10)] dark:bg-[#241f27]/88">
-              <div className="flex items-center gap-2 sm:gap-3">
-                <Image
-                  src={isDark ? brandAssets.logoDark : brandAssets.logoLight}
-                  alt="Marii"
-                  width={126}
-                  height={41}
-                  className="h-[34px] w-auto sm:h-[39px]"
-                  priority
-                />
-
-                <div className="hidden min-w-0 flex-1 md:flex">
-                  <div className="flex min-w-0 flex-1 items-center justify-center gap-1 rounded-full bg-white/55 px-2 py-1.5 dark:bg-white/5">
-                    {NAV_ITEMS.map((item) => (
-                      <a
-                        key={item.href}
-                        href={`#${item.href}`}
-                        onClick={(e) => {
-                          e.preventDefault();
-                          handleNavJump(item.href);
-                        }}
-                        className="whitespace-nowrap rounded-full px-4 py-1.5 text-sm font-medium text-[#6f6770] transition-colors duration-200 hover:bg-white/80 hover:text-[#1f1a22] dark:hover:bg-white/10 dark:hover:text-[#f0e8eb]"
-                      >
-                        {item.label}
-                      </a>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="ml-auto flex items-center gap-2">
-                  <button
-                    type="button"
-                    onClick={() => openWaitlist()}
-                    className="inline-flex h-11 items-center gap-2 rounded-full px-4 text-sm font-semibold transition-opacity duration-200 hover:opacity-95 sm:h-12 sm:px-6"
-                    style={{ background: BRAND, color: PAPER }}
-                  >
-                    Join waitlist
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => setMobileMenuOpen((current) => !current)}
-                    className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-[rgba(31,26,34,0.08)] bg-white/70 text-[#1f1a22] transition-colors duration-200 hover:bg-white dark:border-[rgba(211,203,207,0.10)] dark:bg-white/5 dark:text-[#f0e8eb] md:hidden"
-                    aria-label="Toggle menu"
-                    aria-expanded={mobileMenuOpen}
-                  >
-                    {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-                  </button>
-                </div>
-              </div>
-
-              <div
-                className={`md:hidden ${
-                  mobileMenuOpen ? 'mt-3 grid grid-rows-[1fr]' : 'grid grid-rows-[0fr]'
-                } transition-[grid-template-rows] duration-300 ease-out`}
-              >
-                <div className="overflow-hidden">
-                  <div className="rounded-[22px] border border-[rgba(31,26,34,0.07)] bg-white/75 p-3 dark:border-[rgba(211,203,207,0.08)] dark:bg-white/5">
-                    <div className="grid gap-2">
-                      {NAV_ITEMS.map((item) => (
-                        <a
-                          key={item.href}
-                          href={`#${item.href}`}
-                          onClick={(e) => {
-                            e.preventDefault();
-                            handleNavJump(item.href);
-                          }}
-                          className="rounded-full px-4 py-3 text-sm font-medium text-[#1f1a22] transition-colors hover:bg-[#f7eef0] dark:text-[#f0e8eb] dark:hover:bg-white/10"
-                        >
-                          {item.label}
-                        </a>
-                      ))}
-                      <button
-                        type="button"
-                        onClick={() => openWaitlist()}
-                        className="mt-1 inline-flex items-center justify-center rounded-full px-4 py-3 text-sm font-semibold text-[#f7eef0]"
-                        style={{ background: BRAND }}
-                      >
-                        Join waitlist
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+          <div className="relative z-20 px-4 pt-4 sm:px-6 md:px-10">
+            <NavChrome
+              isDark={isDark}
+              toggleTheme={toggleTheme}
+              mobileMenuOpen={mobileMenuOpen}
+              toggleMobileMenu={() => setMobileMenuOpen((current) => !current)}
+              onNavigate={handleNavJump}
+              onOpenWaitlist={() => openWaitlist()}
+              activeSection={activeSection}
+            />
           </div>
 
-          <div className="px-4 pt-4 sm:px-6 md:px-10">
-            <div className="flex justify-end">
-              <button
-                type="button"
-                onClick={toggleTheme}
-                className="rounded-full p-2 transition-colors duration-200 hover:bg-[#f0e8eb] dark:hover:bg-white/10"
-                aria-label="Toggle theme"
-              >
-                {isDark ? <Sun className="h-4 w-4 text-[#6f6770]" /> : <Moon className="h-4 w-4 text-[#6f6770]" />}
-              </button>
+          {isScrolled ? (
+            <div className="fixed left-0 right-0 top-4 z-50 px-4 sm:px-6 md:px-10">
+              <NavChrome
+                floating
+                isDark={isDark}
+                toggleTheme={toggleTheme}
+                mobileMenuOpen={mobileMenuOpen}
+                toggleMobileMenu={() => setMobileMenuOpen((current) => !current)}
+                onNavigate={handleNavJump}
+                onOpenWaitlist={() => openWaitlist()}
+                activeSection={activeSection}
+              />
             </div>
-          </div>
+          ) : null}
 
           <div className="grid gap-8 px-4 pb-8 pt-8 sm:px-6 md:px-10 lg:grid-cols-[minmax(0,1.04fr)_minmax(0,0.96fr)] lg:items-center lg:gap-6 lg:pb-12 lg:pt-10">
             <div className="relative z-10 flex max-w-[40rem] flex-col justify-end pb-2 lg:max-w-[36rem]">
               <p className="mb-4 font-mono text-[10px] uppercase tracking-[0.16em] text-[#6f6770] sm:mb-5 sm:text-[11px]">
-                BUILT FOR SOUTHERN AFRICAN SMEs
+                AI QUOTE SOFTWARE FOR SOUTHERN AFRICAN SMEs
               </p>
               <h1
                 className="max-w-[12ch] font-serif font-light leading-[0.92] tracking-[-0.04em] text-[#1f1a22] dark:text-[#f0e8eb]"
                 style={{ fontSize: 'clamp(3.2rem, 14vw, 7.5rem)' }}
               >
-                Quote
+                Generate
                 <br />
-                faster,
+                professional
                 <br />
-                <span style={{ color: BRAND }}>always.</span>
+                <span style={{ color: BRAND }}>PDF quotes instantly.</span>
               </h1>
               <p className="mt-4 max-w-[30rem] font-serif text-[1.35rem] leading-tight text-[#1f1a22] dark:text-[#f0e8eb] sm:mt-5 sm:text-[1.65rem]">
-                Marii turns WhatsApp messages, voice notes, and emails into clean PDF quotes in seconds.
+                Marii turns WhatsApp messages, voice notes, and emails into clear PDF quotes that are easy to send,
+                print, and share.
               </p>
               <p className="mt-5 max-w-[33rem] text-sm leading-relaxed text-[#6f6770] sm:mt-6 sm:text-base">
-                Marii checks the price list, asks for missing details when needed, and helps your team send a quote
+                Marii checks the catalogue, asks for missing details when needed, and helps your team send quotes
                 without the back and forth.
               </p>
               <div className="mt-7 flex flex-col gap-3 sm:mt-8 sm:flex-row sm:items-center">
@@ -588,7 +708,7 @@ export default function Home() {
                     color: INK,
                   }}
                 >
-                  See the assistants
+                  See the AI assistants
                 </button>
               </div>
             </div>
@@ -706,19 +826,18 @@ export default function Home() {
         </div>
       </section>
 
-      <section id="preview" className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8 sm:py-28">
+      <section id="templates" className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8 sm:py-28">
         <div className="mx-auto max-w-4xl text-center">
+          <p className="font-mono text-[11px] uppercase tracking-[0.14em] text-[#6f6770]">PDF quote templates</p>
           <h2
             className="font-serif font-light leading-[1.08] tracking-[-0.025em] text-[#1f1a22] dark:text-[#f0e8eb]"
             style={{ fontSize: 'clamp(2.25rem, 5vw, 3.5rem)' }}
           >
-            Flawless quotes.
-            <br />
-            Delivered instantly.
+            See the quote before you send it.
           </h2>
           <p className="mx-auto mt-6 max-w-2xl text-base leading-relaxed text-[#6f6770]">
-            Give clients a stunning digital breakdown or a pristine physical printout. Marii keeps the quote clean,
-            professional, and easy to send.
+            Choose between a simple table-based quote and a visual product-led quote. Both are made for SMEs that
+            want to send clean PDF quotes fast.
           </p>
         </div>
 
@@ -733,13 +852,13 @@ export default function Home() {
             <div className="rounded-[18px] border border-[rgba(31,26,34,0.08)] bg-[#fbf6f7] p-5 shadow-[0_18px_45px_-28px_rgba(31,26,34,0.22)] dark:border-[rgba(211,203,207,0.08)] dark:bg-[#231d26] sm:p-8">
               <div className="flex items-center justify-between gap-4">
                 <div>
-                  <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#6f6770]">Quote preview</p>
+                  <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#6f6770]">Standard template</p>
                   <h3 className="mt-2 font-serif text-[1.5rem] font-light text-[#1f1a22] dark:text-[#f0e8eb]">
-                    Premium quote breakdown
+                    Table-based PDF quote
                   </h3>
                 </div>
                 <span className="rounded-full border border-[rgba(107,53,80,0.18)] bg-[#f7eef0] px-3 py-1 text-[11px] font-semibold text-[#6b3550] dark:bg-[#2f2731]">
-                  Print ready
+                  Easy to send
                 </span>
               </div>
 
@@ -757,12 +876,12 @@ export default function Home() {
               <div className="mt-6 rounded-[18px] bg-[#6b3550] p-5 text-[#f7eef0]">
                 <div className="flex items-end justify-between gap-4">
                   <div>
-                    <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#f7eef0]/65">Accepted</p>
+                    <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#f7eef0]/65">Total on quote</p>
                     <p className="mt-1 font-serif text-[2rem] font-light leading-none">R 1,240.00</p>
                   </div>
                   <div className="text-right">
-                    <p className="text-[11px] uppercase tracking-[0.12em] text-[#f7eef0]/65">Response time</p>
-                    <p className="mt-1 text-sm font-semibold">Under 2 minutes</p>
+                    <p className="text-[11px] uppercase tracking-[0.12em] text-[#f7eef0]/65">Best for</p>
+                    <p className="mt-1 text-sm font-semibold">Fast service quotes</p>
                   </div>
                 </div>
               </div>
@@ -771,12 +890,12 @@ export default function Home() {
 
           <div className="flex flex-col justify-between rounded-[22px] p-6 sm:p-8" style={{ background: 'rgba(107,53,80,0.08)' }}>
             <div>
-              <p className="font-mono text-[11px] uppercase tracking-[0.14em] text-[#6b3550]">What clients get</p>
+              <p className="font-mono text-[11px] uppercase tracking-[0.14em] text-[#6b3550]">Why the templates matter</p>
               <ul className="mt-5 space-y-4">
                 {[
-                  'Web-optimized and mobile-responsive quotes clients can view, accept, and share.',
-                  'Print-ready PDFs that look clean on paper and stay crisp in high resolution.',
-                  'Tailored branding with your logo, custom terms, and product line items in seconds.',
+                  'Easy to read on screen and on paper.',
+                  'Keeps product details, pricing, and totals clear.',
+                  'Lets your team move from message to quote without extra admin.',
                 ].map((item) => (
                   <li key={item} className="flex gap-3 text-sm leading-relaxed text-[#1f1a22] dark:text-[#f0e8eb]">
                     <Check className="mt-0.5 h-4 w-4 flex-shrink-0 text-[#6b3550]" />
@@ -787,9 +906,12 @@ export default function Home() {
             </div>
 
             <div className="mt-8 rounded-[18px] border border-[rgba(31,26,34,0.08)] bg-white p-5 dark:border-[rgba(211,203,207,0.08)] dark:bg-white/5">
-              <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#6f6770]">Delivery mode</p>
-              <p className="mt-2 font-serif text-[1.6rem] font-light text-[#1f1a22] dark:text-[#f0e8eb]">
-                Digital breakdown or paper-perfect printout.
+              <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#6f6770]">Multiple currencies</p>
+              <div className="mt-3 flex flex-wrap items-center gap-3">
+                <CurrencyTicker />
+              </div>
+              <p className="mt-3 text-sm leading-relaxed text-[#6f6770]">
+                ZAR, USD, BWP, NAD, and EUR are all supported, so the same quote can work across different deals.
               </p>
             </div>
           </div>
@@ -802,13 +924,13 @@ export default function Home() {
             className="font-serif font-light leading-[1.08] tracking-[-0.025em] text-[#1f1a22] dark:text-[#f0e8eb]"
             style={{ fontSize: 'clamp(2rem, 4vw, 3rem)' }}
           >
-            Two AI assistants,
+            AI assistants that help you quote
             <br />
-            one faster workflow.
+            and keep your catalogue ready.
           </h2>
           <p className="mt-4 max-w-2xl text-base leading-relaxed text-[#6f6770]">
-            Marii is built around two assistants that handle the full quoting loop: one creates the quote, the other
-            keeps your catalogue clean and ready for the next enquiry.
+            Marii uses two AI assistants to handle the everyday quoting work: one turns messages into PDF quotes, and
+            the other keeps your catalogue clean, current, and ready for the next enquiry.
           </p>
         </div>
 
@@ -854,13 +976,11 @@ export default function Home() {
             className="font-serif font-light leading-[1.08] tracking-[-0.025em] text-[#1f1a22] dark:text-[#f0e8eb]"
             style={{ fontSize: 'clamp(2rem, 4vw, 3rem)' }}
           >
-            Everything the quote engine
-            <br />
-            needs to run cleanly.
+            What Marii helps your team do.
           </h2>
           <p className="mt-4 max-w-2xl text-base leading-relaxed text-[#6f6770]">
-            This is the practical layer behind the product: fast quoting, catalogue lookup, template control, and the
-            visibility an SME needs to make better sales decisions.
+            Marii cuts admin, keeps quotes accurate, and helps SMEs move from customer request to sent PDF without
+            unnecessary back and forth.
           </p>
         </div>
 
@@ -888,89 +1008,17 @@ export default function Home() {
         </div>
       </section>
 
-      <section id="templates" className="mx-auto max-w-7xl px-4 py-4 sm:px-6 lg:px-8 sm:py-8">
-        <div className="mb-12 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-          <div className="max-w-3xl">
-            <h2
-              className="font-serif font-light leading-[1.08] tracking-[-0.025em] text-[#1f1a22] dark:text-[#f0e8eb]"
-              style={{ fontSize: 'clamp(2rem, 4vw, 3rem)' }}
-            >
-              PDF templates that fit
-              <br />
-              the way you sell.
-            </h2>
-            <p className="mt-4 text-base leading-relaxed text-[#6f6770]">
-              Choose between a standard quote layout and a visual product-led template. Marii also supports multiple
-              currencies, and the currency selector rolls live so the option stays visible without feeling static.
-            </p>
-          </div>
-          <div className="flex items-center gap-3">
-            <span className="font-mono text-[11px] uppercase tracking-[0.14em] text-[#6f6770]">Supported currency</span>
-            <CurrencyTicker />
-          </div>
-        </div>
-
-        <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,0.9fr)]">
-          <div className="grid gap-4 sm:grid-cols-2">
-            {TEMPLATE_CARDS.map((template) => (
-              <div
-                key={template.title}
-                className="rounded-[22px] p-6"
-                style={{
-                  background: isDark ? 'rgba(42,36,41,0.60)' : 'rgba(255,255,255,0.75)',
-                  border: isDark ? '1px solid rgba(211,203,207,0.08)' : '1px solid rgba(31,26,34,0.07)',
-                  boxShadow: '0 1px 2px rgba(31,26,34,0.04), 0 8px 24px -10px rgba(31,26,34,0.04)',
-                }}
-              >
-                <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-[10px]" style={{ background: 'rgba(107,53,80,0.10)' }}>
-                  <FileText className="h-5 w-5" style={{ color: BRAND }} />
-                </div>
-                <p className="text-[15px] font-semibold text-[#1f1a22] dark:text-[#f0e8eb]">{template.title}</p>
-                <p className="mt-2 text-[13px] leading-relaxed text-[#6f6770]">{template.desc}</p>
-              </div>
-            ))}
-          </div>
-
-          <div className="rounded-[22px] p-6" style={{ background: 'rgba(107,53,80,0.08)' }}>
-            <p className="font-mono text-[11px] uppercase tracking-[0.14em] text-[#6b3550]">Why the templates matter</p>
-            <div className="mt-5 space-y-4">
-              <div className="rounded-[18px] border border-[rgba(31,26,34,0.07)] bg-white p-5 dark:border-[rgba(211,203,207,0.08)] dark:bg-white/5">
-                <p className="text-[13px] font-semibold text-[#1f1a22] dark:text-[#f0e8eb]">Standard template</p>
-                <p className="mt-1 text-sm leading-relaxed text-[#6f6770]">
-                  Best for service jobs, line items, and fast quoting where the table matters more than product imagery.
-                </p>
-              </div>
-              <div className="rounded-[18px] border border-[rgba(31,26,34,0.07)] bg-white p-5 dark:border-[rgba(211,203,207,0.08)] dark:bg-white/5">
-                <p className="text-[13px] font-semibold text-[#1f1a22] dark:text-[#f0e8eb]">Image-focused template</p>
-                <p className="mt-1 text-sm leading-relaxed text-[#6f6770]">
-                  Ideal for products, bundles, and work that benefits from photos, details, pricing, and a clean total.
-                </p>
-              </div>
-              <div className="rounded-[18px] border border-[rgba(31,26,34,0.07)] bg-white p-5 dark:border-[rgba(211,203,207,0.08)] dark:bg-white/5">
-                <p className="text-[13px] font-semibold text-[#1f1a22] dark:text-[#f0e8eb]">Currency flexibility</p>
-                <p className="mt-1 text-sm leading-relaxed text-[#6f6770]">
-                  Roll between currencies without breaking the layout, so the same quote can work across different deal
-                  contexts.
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
       <section id="use-cases" className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8 sm:py-28">
         <div className="mb-12 max-w-3xl">
           <h2
             className="font-serif font-light leading-[1.08] tracking-[-0.025em] text-[#1f1a22] dark:text-[#f0e8eb]"
             style={{ fontSize: 'clamp(2rem, 4vw, 3rem)' }}
           >
-            Use cases that match
-            <br />
-            how Southern African SMEs work.
+            Built for South African SMEs.
           </h2>
           <p className="mt-4 max-w-2xl text-base leading-relaxed text-[#6f6770]">
-            These are the teams Marii is built for. The language, workflow, and pricing all stay practical for
-            operators who need to move fast and keep the pipeline tidy.
+            The language, workflow, and pricing all stay practical for teams that quote often and need to move fast
+            without losing control of the work.
           </p>
         </div>
 
@@ -1003,7 +1051,7 @@ export default function Home() {
             after switching to Marii.
           </h2>
           <p className="mx-auto mt-4 max-w-2xl text-sm leading-relaxed text-[#6f6770] sm:text-base">
-            A simple testimonial slider with room for more customer voices as the list grows.
+            Real feedback from teams that want faster quotes, cleaner PDFs, and less admin.
           </p>
         </div>
 
@@ -1098,14 +1146,46 @@ export default function Home() {
             className="font-serif font-light leading-[1.08] tracking-[-0.025em] text-[#1f1a22] dark:text-[#f0e8eb]"
             style={{ fontSize: 'clamp(2rem, 4vw, 3rem)' }}
           >
-            Simple pricing for SMEs
-            <br />
-            that quote often.
+            Simple pricing for South African SMEs.
           </h2>
           <p className="mt-4 text-base leading-relaxed text-[#6f6770]">
-            Every plan starts with a fully unlocked 14-day free trial. No setup fees, cancel anytime. Top-up packs
-            keep busy months moving.
+            Pick a plan based on how many quotes you send each month. Upgrade when your team grows or top up when a
+            busy month runs hot.
           </p>
+        </div>
+
+        <div className="mb-8 flex flex-col gap-4 rounded-[22px] border border-[rgba(31,26,34,0.07)] bg-white/72 p-4 shadow-[0_12px_30px_-24px_rgba(31,26,34,0.14)] dark:border-[rgba(211,203,207,0.08)] dark:bg-white/5 sm:flex-row sm:items-center sm:justify-between sm:p-5">
+          <div>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#6f6770]">Billing</p>
+            <p className="mt-1 text-sm leading-relaxed text-[#6f6770]">
+              Switch to yearly billing and save 10% on the price of every plan.
+            </p>
+          </div>
+
+          <div className="inline-flex rounded-full border border-[rgba(107,53,80,0.14)] bg-[#f7eef0] p-1 dark:border-[rgba(211,203,207,0.08)] dark:bg-white/5">
+            <button
+              type="button"
+              onClick={() => setBillingCycle('monthly')}
+              className={`rounded-full px-4 py-2 text-sm font-semibold transition-colors ${
+                billingCycle === 'monthly'
+                  ? 'bg-[#6b3550] text-[#f7eef0] shadow-[0_10px_20px_-14px_rgba(107,53,80,0.45)]'
+                  : 'text-[#6f6770] hover:text-[#1f1a22] dark:text-[#cfc7cb] dark:hover:text-[#f0e8eb]'
+              }`}
+            >
+              Monthly
+            </button>
+            <button
+              type="button"
+              onClick={() => setBillingCycle('yearly')}
+              className={`rounded-full px-4 py-2 text-sm font-semibold transition-colors ${
+                billingCycle === 'yearly'
+                  ? 'bg-[#6b3550] text-[#f7eef0] shadow-[0_10px_20px_-14px_rgba(107,53,80,0.45)]'
+                  : 'text-[#6f6770] hover:text-[#1f1a22] dark:text-[#cfc7cb] dark:hover:text-[#f0e8eb]'
+              }`}
+            >
+              Year
+            </button>
+          </div>
         </div>
 
         <div className="grid gap-4 lg:grid-cols-3">
@@ -1128,8 +1208,22 @@ export default function Home() {
               <h3 className="mt-4 font-serif text-[1.7rem] font-light leading-tight text-[#1f1a22] dark:text-[#f0e8eb]">
                 {plan.label}
               </h3>
-              <p className="mt-3 text-[2rem] font-light leading-none text-[#6b3550]">{plan.price}</p>
+              <p className="mt-3 text-[2rem] font-light leading-none text-[#6b3550]">
+                {billingCycle === 'monthly'
+                  ? `${formatRand(plan.monthlyPrice)} / mo`
+                  : `${formatRand(plan.monthlyPrice * (1 - BILLING_SAVE_RATE))} / mo`}
+              </p>
+              {billingCycle === 'yearly' ? (
+                <p className="mt-1 text-[13px] leading-relaxed text-[#6f6770]">
+                  {formatRand(plan.monthlyPrice * 12 * (1 - BILLING_SAVE_RATE))} / yr billed yearly
+                </p>
+              ) : null}
               <p className="mt-2 text-sm font-semibold uppercase tracking-[0.12em] text-[#6f6770]">{plan.quotes}</p>
+              {billingCycle === 'yearly' ? (
+                <p className="mt-1 text-[12px] uppercase tracking-[0.12em] text-[#6b3550]">
+                  Yearly billing saves 10%
+                </p>
+              ) : null}
               <p className="mt-4 text-sm leading-relaxed text-[#6f6770]">{plan.fit}</p>
 
               <div className="mt-5 rounded-[16px] border border-[rgba(31,26,34,0.07)] bg-white p-4 dark:border-[rgba(211,203,207,0.08)] dark:bg-white/5">
@@ -1175,7 +1269,7 @@ export default function Home() {
             className="font-serif font-light leading-[1.08] tracking-[-0.025em] text-[#1f1a22] dark:text-[#f0e8eb]"
             style={{ fontSize: 'clamp(2rem, 4vw, 3rem)' }}
           >
-            Frequently asked questions.
+            Common questions about Marii.
           </h2>
         </div>
 
@@ -1370,13 +1464,7 @@ export default function Home() {
           </div>
 
           <nav className="flex gap-6">
-            {[
-              { label: 'Preview', href: 'preview' },
-              { label: 'Assistants', href: 'assistants' },
-              { label: 'Templates', href: 'templates' },
-              { label: 'Pricing', href: 'pricing' },
-              { label: 'FAQ', href: 'faq' },
-            ].map((item) => (
+            {NAV_ITEMS.map((item) => (
               <a
                 key={item.href}
                 href={`#${item.href}`}
