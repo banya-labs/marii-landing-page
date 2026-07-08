@@ -987,41 +987,46 @@ export default function Home() {
           </p>
         </div>
 
-        <div className="space-y-8 lg:space-y-12">
+        <div className="grid gap-4 sm:gap-5 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 lg:auto-rows-fr">
           {FEATURE_GRID.map((feature, index) => {
             const Icon = feature.icon;
-            const isEven = index % 2 === 0;
 
             return (
               <div
                 key={feature.title}
-                className={`flex flex-col gap-6 sm:gap-8 ${isEven ? 'lg:flex-row' : 'lg:flex-row-reverse'} lg:items-center`}
+                className="group relative rounded-[22px] p-6 overflow-hidden transition-all hover:shadow-lg"
+                style={{
+                  background: isDark ? 'rgba(42,36,41,0.60)' : 'rgba(255,255,255,0.75)',
+                  border: isDark ? '1px solid rgba(211,203,207,0.08)' : '1px solid rgba(31,26,34,0.07)',
+                }}
               >
-                <div className="flex-1 relative">
-                  <div className="flex flex-col space-y-4">
-                    <div className="flex items-start gap-4">
+                {/* Accent line */}
+                <div 
+                  className="absolute top-0 left-0 h-1 w-0 group-hover:w-full transition-all duration-300" 
+                  style={{ background: BRAND }}
+                />
+                
+                <div className="relative h-full flex flex-col">
+                  <div className="flex-1">
+                    <div className="flex items-start gap-3 mb-4">
                       <div 
-                        className="flex-shrink-0 flex h-14 w-14 items-center justify-center rounded-xl" 
+                        className="flex-shrink-0 flex h-10 w-10 items-center justify-center rounded-lg" 
                         style={{ background: 'rgba(107,53,80,0.12)' }}
                       >
-                        <Icon className="h-6 w-6" style={{ color: BRAND }} />
+                        <Icon className="h-5 w-5" style={{ color: BRAND }} />
                       </div>
-                      <div>
-                        <p className="text-[13px] uppercase tracking-[0.1em] font-semibold text-[#a8a5ac] dark:text-[#8d8691]">Feature {index + 1}</p>
-                        <p className="mt-2 text-lg font-semibold text-[#1f1a22] dark:text-[#f0e8eb]">{feature.title}</p>
+                      <div className="flex-1">
+                        <p className="text-[11px] uppercase tracking-[0.12em] font-semibold text-[#a8a5ac] dark:text-[#8d8691]">
+                          Feature {index + 1}
+                        </p>
+                        <p className="mt-1 text-base font-semibold text-[#1f1a22] dark:text-[#f0e8eb]">
+                          {feature.title}
+                        </p>
                       </div>
                     </div>
-                    <p className="text-base leading-relaxed text-[#6f6770] dark:text-[#b8adb5]">{feature.desc}</p>
-                  </div>
-                </div>
-                <div className="flex-1 relative h-64 lg:h-80 rounded-2xl overflow-hidden" style={{ 
-                  background: isDark ? 'rgba(42,36,41,0.40)' : 'rgba(107,53,80,0.06)',
-                  border: isDark ? '1px solid rgba(211,203,207,0.08)' : '1px solid rgba(107,53,80,0.10)'
-                }}>
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="text-center text-[#a8a5ac] dark:text-[#8d8691]">
-                      <Icon className="h-20 w-20 mx-auto opacity-20" style={{ color: BRAND }} />
-                    </div>
+                    <p className="text-sm leading-relaxed text-[#6f6770] dark:text-[#b8adb5]">
+                      {feature.desc}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -1044,45 +1049,49 @@ export default function Home() {
           </p>
         </div>
 
-        <div className="grid gap-4 sm:gap-5 grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 lg:auto-rows-fr">
+        <div className="space-y-8 lg:space-y-12">
           {USE_CASES.map((item, index) => {
+            const isEven = index % 2 === 0;
+
             return (
               <button
                 key={item.title}
                 onClick={() => openWaitlist()}
-                className="group relative rounded-[22px] p-6 overflow-hidden transition-all hover:shadow-lg text-left bg-transparent border-0 cursor-pointer w-full h-full"
-                style={{
-                  background: isDark ? 'rgba(42,36,41,0.60)' : 'rgba(255,255,255,0.75)',
-                  border: isDark ? '1px solid rgba(211,203,207,0.08)' : '1px solid rgba(31,26,34,0.07)',
-                }}
+                className={`flex flex-col gap-6 sm:gap-8 ${isEven ? 'lg:flex-row' : 'lg:flex-row-reverse'} lg:items-center text-left bg-transparent border-0 cursor-pointer w-full group`}
               >
-                {/* Accent line */}
-                <div 
-                  className="absolute top-0 left-0 h-1 w-0 group-hover:w-full transition-all duration-300" 
-                  style={{ background: BRAND }}
-                />
-                
-                <div className="relative h-full flex flex-col">
-                  <div className="flex-1">
-                    <p className="text-[13px] uppercase tracking-[0.12em] font-semibold text-[#a8a5ac] dark:text-[#8d8691] mb-2">
-                      Segment {index + 1}
-                    </p>
-                    <h3 className="text-lg sm:text-base lg:text-lg font-semibold text-[#1f1a22] dark:text-[#f0e8eb]">
-                      {item.title}
-                    </h3>
-                    <p className="mt-3 text-sm leading-relaxed text-[#6f6770] dark:text-[#b8adb5]">
-                      {item.desc}
-                    </p>
+                <div className="flex-1 relative">
+                  <div className="flex flex-col space-y-4">
+                    <div className="flex items-start gap-4">
+                      <div 
+                        className="flex-shrink-0 flex h-14 w-14 items-center justify-center rounded-xl group-hover:shadow-lg transition-all" 
+                        style={{ background: 'rgba(107,53,80,0.12)' }}
+                      >
+                        <span className="text-lg font-semibold" style={{ color: BRAND }}>{index + 1}</span>
+                      </div>
+                      <div>
+                        <p className="text-[13px] uppercase tracking-[0.1em] font-semibold text-[#a8a5ac] dark:text-[#8d8691]">Segment {index + 1}</p>
+                        <p className="mt-2 text-lg font-semibold text-[#1f1a22] dark:text-[#f0e8eb]">{item.title}</p>
+                      </div>
+                    </div>
+                    <p className="text-base leading-relaxed text-[#6f6770] dark:text-[#b8adb5]">{item.desc}</p>
+                    <div className="pt-4 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <span className="text-xs font-semibold text-[#6b3550] dark:text-[#d4a5bf] flex items-center gap-2">
+                        Get started
+                        <svg className="w-3 h-3 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                        </svg>
+                      </span>
+                    </div>
                   </div>
-                  
-                  {/* Get Started CTA indicator */}
-                  <div className="mt-6 pt-6 border-t border-[rgba(107,53,80,0.08)] dark:border-[rgba(211,203,207,0.04)] opacity-0 group-hover:opacity-100 transition-opacity">
-                    <span className="text-xs font-semibold text-[#6b3550] dark:text-[#d4a5bf] flex items-center gap-2">
-                      Get started
-                      <svg className="w-3 h-3 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                      </svg>
-                    </span>
+                </div>
+                <div className="flex-1 relative h-64 lg:h-80 rounded-2xl overflow-hidden group-hover:shadow-lg transition-all" style={{ 
+                  background: isDark ? 'rgba(42,36,41,0.40)' : 'rgba(107,53,80,0.06)',
+                  border: isDark ? '1px solid rgba(211,203,207,0.08)' : '1px solid rgba(107,53,80,0.10)'
+                }}>
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="text-center text-[#a8a5ac] dark:text-[#8d8691]">
+                      <span className="text-6xl font-semibold opacity-20" style={{ color: BRAND }}>{index + 1}</span>
+                    </div>
                   </div>
                 </div>
               </button>
